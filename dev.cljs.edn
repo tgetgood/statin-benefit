@@ -1,0 +1,3 @@
+^{:open-url false
+   :css-dirs ["resources/public"]}
+{:main statin-benefit.core}

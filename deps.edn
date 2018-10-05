@@ -1,0 +1,4 @@
+{:deps
+ {reagent {:mvn/version "0.8.1"}
+  re-frame {:mvn/version "0.10.6"}}
+ :paths ["src" "target" "resources"]}
