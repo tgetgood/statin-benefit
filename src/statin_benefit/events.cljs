@@ -25,7 +25,8 @@
    ::hdl-c        int
    ::c-units      keyword
    ::smoker?      bool
-   ::diabetic?    bool})
+   ::diabetic?    bool
+   ::intensity    keyword})
 
 (run! (fn [[ev format]]
         (re-frame/reg-event-db

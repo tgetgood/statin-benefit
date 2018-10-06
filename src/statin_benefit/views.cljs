@@ -1,10 +1,18 @@
 (ns statin-benefit.views
   (:require [re-frame.core :as re-frame]
-            [statin-benefit.events :as ev]))
+            [statin-benefit.events :as ev]
+            [statin-benefit.subs :as subs]))
+
+(defn percentage [x]
+  [:span (str (.toFixed (* 100 x) 2) "%")])
 
 (defn pass-off [k]
   (fn [ev]
     (re-frame/dispatch [k (-> ev .-target .-value)])))
+
+(defn dsub [k]
+  (percentage
+   @(re-frame/subscribe [k])))
 
 (defn main-panel []
   [:div.container
@@ -35,8 +43,9 @@
    [:div.row
     [:div.columns.four
      [:label {:for "ethnicity"} "Ethnicity"]
-     [:select#ethnicity {:on-change (pass-off ::ev/ethnicity)}
-      [:option {:disabled true :selected true} "--- Select ---"]
+     [:select#ethnicity {:on-change (pass-off ::ev/ethnicity)
+                         :default-value :none}
+      [:option {:disabled true :value :none} "--- Select ---"]
       [:option {:value :black} "African American"]
       [:option {:value :white} "White"]]]]
 
@@ -83,7 +92,8 @@
                                  :on-change (pass-off ::ev/hdl-c)}]]
      [:div.columns.three
       [:label {:for "units"} "Units"]
-      [:select#units {:on-change (pass-off ::ev/c-units)}
+      [:select#units {:on-change (pass-off ::ev/c-units)
+                      :default-value :mg-dl}
        [:option {:value :mmol-l} "mmol/L"]
        [:option {:value :mg-dl} "mg/dL"]]]]]
 
@@ -110,11 +120,35 @@
                :on-change (pass-off ::ev/diabetic?)}]
       " No"]]]
 
+   [:div.row
+    [:div.columns.six
+     [:label {:for "statins"} "Statin Treatement Intensity"]
+     [:select#statins {:default-value :moderate
+                       :on-change (pass-off ::ev/intensity)}
+      [:option {:value :low} "Low"]
+      [:option {:value :moderate} "Moderate"]
+      [:option {:value :high} "High"]]]]
+
    [:div.vspacer]
 
    [:div.row
     [:h4 "Results"]]
 
+   [:div.row
+    [:div.columns.four
+     [:span "Untreated survival: " (dsub ::subs/untreated-survival)]]
+    [:div.columns.four
+     [:span "Untreated risk: " (dsub ::subs/untreated-risk)]]]
+   [:div.row
+    [:div.columns.four
+     [:span "Treated survival: " (dsub ::subs/treated-survival)]]
+    [:div.columns.four
+     [:span "Treated risk: " (dsub ::subs/treated-risk)]]]
 
-
-  ])
+   [:div.row
+    [:div.columns.four
+     [:span "Risk Reduction: " (dsub ::subs/reduction)]]
+    [:div.columns.four
+     [:span "Relative Risk Reduction: " (dsub ::subs/reduction-percentage)]]]
+   ]
+  )

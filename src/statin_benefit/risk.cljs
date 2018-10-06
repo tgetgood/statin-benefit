@@ -1,16 +1,26 @@
-(ns statin-benefit.risk)
-
-(def mmol->mg
-  38.66976)
-
-(defn cholesterol-conversion [x units]
-  (* x (if (= units :mg-dl) 1 mmol->mg)))
+(ns statin-benefit.risk
+  (:require re-frame.db))
 
 (defn ln [x]
   (js/Math.log x))
 
+(defn exp
+  ([x]
+   (js/Math.exp x))
+  ([base power]
+   (js/Math.pow base power)))
+
+(def mmol->mg
+  38.66976)
+
+(def mg->mmol
+  0.02586)
+
+(defn cholesterol-conversion [x units]
+  (* x (if (= units :mg-dl) 1 mmol->mg)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;; Factors for the Pooled Cohort Risk
+;;;;; Parameter functions for the Pooled Cohort Risk
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn ln-age [{:keys [age]}]
@@ -58,14 +68,14 @@
   (if diabetic? 1 0))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;; Coefficient table for Pooled Cohort Risk
+;;;;; Parameter table for Pooled Cohort Risk
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def ten-year-risk
   {{:ethnicity :white :sex :female}
    {:baseline-survival 0.9665
     :mean-score        -29.18
-    :coefficients      {ln-age            -29.799
+    :parameters        {ln-age            -29.799
                         ln-age**2         4.884
                         ln-total-c        13.540
                         ln-age*ln-total-c -3.114
@@ -80,7 +90,7 @@
    {:ethnicity :black :sex :female}
    {:baseline-survival 0.9533
     :mean-score        86.61
-    :coefficients      {ln-age                 17.114
+    :parameters        {ln-age                 17.114
                         ln-total-c             0.940
                         ln-hdl-c               -18.920
                         ln-age*ln-hdl-c        4.475
@@ -94,7 +104,7 @@
    {:ethnicity :white :sex :male}
    {:baseline-survival 0.9144
     :mean-score        61.18
-    :coefficients      {ln-age            12.344
+    :parameters        {ln-age            12.344
                         ln-total-c        11.853
                         ln-age*ln-total-c -2.664
                         ln-hdl-c          -7.990
@@ -108,10 +118,42 @@
    {:ethnicity :black :sex :male}
    {:baseline-survival 0.8954
     :mean-score        19.54
-    :coefficients      {ln-age          2.469
+    :parameters        {ln-age          2.469
                         ln-total-c      0.302
                         ln-hdl-c        -0.307
                         ln-treated-bp   1.916
                         ln-untreated-bp 1.809
                         smoker?         0.549
                         diabetic?       0.645}}})
+
+
+(defn individual-sum [parameters stats]
+  (reduce + (map (fn [[f c]] (* c (f stats))) parameters)))
+
+(defn untreated-survival [stats]
+  (let [{:keys [baseline-survival mean-score parameters]}
+        (get ten-year-risk (select-keys stats [:ethnicity :sex]))
+
+        score (individual-sum parameters stats)]
+    (exp baseline-survival (exp (- score mean-score)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Statin Benefit
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def intensity-table
+  {:low      0.2
+   :moderate 0.4
+   :high     0.6})
+
+(defn treated-ldl [{:keys [ldl-c c-units intensity]}]
+  (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (get intensity-table intensity)))
+
+(defn hazard-ration [survival]
+  (exp (- (* (ln (- 1 survival)) 0.12346) 0.10821)))
+
+(defn treated-survival [stats]
+  (let [us (untreated-survival stats)]
+    (exp us
+         (exp (hazard-ration us)
+              (treated-ldl stats)))))
