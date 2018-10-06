@@ -1,7 +1,6 @@
 (ns statin-benefit.events
   (:refer-clojure :exclude [int])
-  (:require [re-frame.core :as re-frame]
-            [statin-benefit.db :as db]))
+  (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -25,7 +24,7 @@
    ::ldl-c        int
    ::hdl-c        int
    ::c-units      keyword
-   ::smoke?       bool
+   ::smoker?      bool
    ::diabetic?    bool})
 
 (run! (fn [[ev format]]

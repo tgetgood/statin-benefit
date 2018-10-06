@@ -92,11 +92,11 @@
      [:label {:for "smoker"} "Do you currently smoke?"]
      [:div#smoker.row
       [:input {:type :radio :name :smoker? :value 1
-               :on-change (pass-off ::ev/smoke?)}]
+               :on-change (pass-off ::ev/smoker?)}]
       " Yes"
       [:span.spacing " "]
       [:input {:type :radio :name :smoker? :value 0
-               :on-change (pass-off ::ev/smoke?)}]
+               :on-change (pass-off ::ev/smoker?)}]
       " No"]]
 
     [:div.columns.four
