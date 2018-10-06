@@ -1,0 +1,15 @@
+.spacing {
+		padding: 5%;
+}
+
+.vspacer {
+		padding-top: 2em;
+}
+
+.paint {
+		background: yellow;
+}
+
+.fix-offset-by-two {
+		margin-left: 21.3333333333%
+}
