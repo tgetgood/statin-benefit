@@ -5,7 +5,7 @@
 (re-frame/reg-event-db
  ::initialize-db
  (fn [_ _]
-   {}))
+   {:intensity :moderate}))
 
 (defn int [x]
   (js/parseInt x))
