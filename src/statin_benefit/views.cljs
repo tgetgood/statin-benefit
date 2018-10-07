@@ -149,6 +149,4 @@
     [:div.columns.four
      [:span "Risk Reduction: " (dsub ::subs/reduction)]]
     [:div.columns.four
-     [:span "Relative Risk Reduction: " (dsub ::subs/reduction-percentage)]]]
-   ]
-  )
+     [:span "Relative Risk Reduction: " (dsub ::subs/reduction-percentage)]]]])
