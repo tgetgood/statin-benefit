@@ -4,8 +4,8 @@
 
 (re-frame/reg-event-db
  ::initialize-db
- (fn [_ _]
-   {:c-units :mmol-l}))
+ (fn [_ [_ v]]
+   v))
 
 (defn int [x]
   (js/parseInt x))
