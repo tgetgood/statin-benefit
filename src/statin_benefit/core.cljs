@@ -1,11 +1,10 @@
 (ns ^:figwheel-hooks statin-benefit.core
-  (:require
-   [reagent.core :as reagent]
-   [re-frame.core :as re-frame]
-   [statin-benefit.events :as events]
-   [statin-benefit.views :as views]
-   [statin-benefit.config :as config]))
-
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [reagent.dom.server :as rds]
+            [statin-benefit.config :as config]
+            [statin-benefit.events :as events]
+            [statin-benefit.views :as views]))
 
 (defn dev-setup []
   (when config/debug?
@@ -21,3 +20,6 @@
   (re-frame/dispatch-sync [::events/initialize-db])
   (dev-setup)
   (mount-root))
+
+(defn render-to-str []
+  (rds/render-to-string [views/main-panel]))
