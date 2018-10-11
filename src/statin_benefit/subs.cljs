@@ -55,7 +55,10 @@
    (every? #(valid? (get db %)) required-keys)))
 
 (re-frame/reg-sub
- ::valid?
+ ::validation
  (fn [db [_ k]]
    (let [v (get db k)]
-     (or (nil? v) (valid? v)))))
+     (if (nil? v)
+       "incomplete"
+       (when-not (valid? v)
+         "invalid")))))
