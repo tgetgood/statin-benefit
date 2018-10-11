@@ -1,4 +1,4 @@
-.spacing {
+.hspacer {
 		padding: 5%;
 }
 
@@ -6,10 +6,17 @@
 		padding-top: 2em;
 }
 
-.paint {
-		background: yellow;
+
+.bp-input {
+		width: 40%;
 }
 
-.fix-offset-by-two {
-		margin-left: 21.3333333333%
+input[type="number"].invalid {
+		border: 1px solid red;
+}
+
+.slash {
+		font-weight: bolder;
+		font-size: 2em;
+		vertical-align: sub;
 }

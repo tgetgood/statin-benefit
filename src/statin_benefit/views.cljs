@@ -10,6 +10,11 @@
   (fn [ev]
     (re-frame/dispatch [k (-> ev .-target .-value)])))
 
+(defn invalid? [k]
+  (when-not
+      @(re-frame/subscribe [::subs/valid? k])
+    "invalid"))
+
 (defn dsub [k]
   (percentage
    @(re-frame/subscribe [k])))
@@ -17,63 +22,74 @@
 (defn main-panel []
   [:div.container
    [:div.row
-    [:div.columns.two
+    [:div.columns.three
      [:label {:for "age"} "Age"]
      [:input#age.u-full-width
       {:type :number
        :min 1
        :step 1
        :max 120
+       :pattern "[1-9][0-9]{1,2}"
+       :class (invalid? :bp-systolic)
        :placeholder 50
        :on-change (pass-off ::ev/age)}]]
 
-    [:div.columns.six.fix-offset-by-two
+    [:div.columns.four
+     [:label {:for "ethnicity"} "Ethnicity"]
+     [:select#ethnicity.u-full-width {:on-change (pass-off ::ev/ethnicity)
+                         :default-value :none}
+      [:option {:disabled true :value :none} "--- Select ---"]
+      [:option {:value :black} "African American"]
+      [:option {:value :white} "White"]]]
+
+    [:div.columns.five
      [:label {:for "sex"} "Sex"]
-     [:div#sex.row
+     [:div#sex.row.u-full-width
       [:span
        [:input {:type :radio :name :sex :value :male
                 :on-change (pass-off ::ev/sex)}]
        " Male"]
-      [:span.spacing " "]
+      [:span.hspacer " "]
       [:span
        [:input {:type :radio :name :sex :value :female
                  :on-change (pass-off ::ev/sex)}]
        " Female"]]]]
 
-   [:div.row
-    [:div.columns.four
-     [:label {:for "ethnicity"} "Ethnicity"]
-     [:select#ethnicity {:on-change (pass-off ::ev/ethnicity)
-                         :default-value :none}
-      [:option {:disabled true :value :none} "--- Select ---"]
-      [:option {:value :black} "African American"]
-      [:option {:value :white} "White"]]]]
-
    [:div.vspacer]
 
    [:div.row
-    [:div.columns.four
+    [:div.columns.five
      [:label {:for "bp"} "Blood Pressure"]
-     [:div#bp.row
-      [:div.columns.five
-       [:input.u-full-width {:type :number :min 0 :placeholder 120
-                             :on-change (pass-off ::ev/bp-systolic)}]]
-      [:div.columns.one
-       [:h2 " / "]]
-      [:div.columns.five
-       [:input.u-full-width {:type :number :min 0 :placeholder 80
-                             :on-change (pass-off ::ev/bp-diastolic)}]]]]
+     [:div#bp
+      [:span
+       [:input.bp-input
+        {:type :number
+         :min 0
+         :class (invalid? :bp-systolic)
+         :placeholder 120
+         :pattern "[1-9][0-9]{1,2}"
+         :on-change (pass-off ::ev/bp-systolic)}]]
+      [:span.slash " / "]
+      [:span
+       [:input.bp-input
+        {:type :number
+         :min 0
+         :placeholder 80
+         :pattern "[1-9][0-9]{1,2}"
+         :on-change (pass-off ::ev/bp-diastolic)}]]]]
 
-    [:div.columns.eight
+    [:div.columns.seven
      [:label {:for "bp-treatment"} "Currently being treated for hypertension?"]
      [:div#bp-treatment.row
       [:input {:type :radio :name :hypertension :value 1
                 :on-change (pass-off ::ev/hypertension)}]
       " Yes"
-      [:span.spacing " "]
+      [:span.hspacer " "]
       [:input {:type :radio :name :hypertension :value 0
                 :on-change (pass-off ::ev/hypertension)}]
       " No"]]]
+
+   [:div.vspacer]
 
    [:div.row
     [:label {:for "cholesterol"} "Cholesterol:"]
@@ -81,10 +97,12 @@
      [:div.columns.three
       [:label {:for "total"} "Total"]
       [:input#total.u-full-width {:type :number :min 0
+                                  :class (invalid? :bp-systolic)
                                    :on-change (pass-off ::ev/total-c)}]]
      [:div.columns.three
       [:label {:for "ldl"} "LDL"]
       [:input#ldl.u-full-width {:type :number :min 0
+                                :class (invalid? :bp-systolic)
                                  :on-change (pass-off ::ev/ldl-c)}]]
      [:div.columns.three
       [:label {:for "hdl"} "HDL"]
@@ -93,38 +111,43 @@
      [:div.columns.three
       [:label {:for "units"} "Units"]
       [:select#units {:on-change (pass-off ::ev/c-units)
-                      :default-value :mg-dl}
+                      :default-value :mmol-l}
        [:option {:value :mmol-l} "mmol/L"]
        [:option {:value :mg-dl} "mg/dL"]]]]]
 
+   [:div.vspacer]
+
    [:div.row
-    [:div.columns.four
+    [:div.columns.six
      [:label {:for "smoker"} "Do you currently smoke?"]
      [:div#smoker.row
       [:input {:type :radio :name :smoker? :value 1
                :on-change (pass-off ::ev/smoker?)}]
       " Yes"
-      [:span.spacing " "]
+      [:span.hspacer " "]
       [:input {:type :radio :name :smoker? :value 0
                :on-change (pass-off ::ev/smoker?)}]
       " No"]]
 
-    [:div.columns.four
+    [:div.columns.six
      [:label {:for "diabetic"} "Are you diabetic?"]
      [:div#diabetic.row
       [:input {:type :radio :name :diabetic :value 1
                :on-change (pass-off ::ev/diabetic?)}]
       " Yes"
-      [:span.spacing " "]
+      [:span.hspacer " "]
       [:input {:type :radio :name :diabetic :value 0
                :on-change (pass-off ::ev/diabetic?)}]
       " No"]]]
 
+   [:div.vspacer]
+
    [:div.row
     [:div.columns.six
      [:label {:for "statins"} "Statin Treatement Intensity"]
-     [:select#statins {:default-value :moderate
+     [:select#statins {:default-value :none
                        :on-change (pass-off ::ev/intensity)}
+      [:option {:value :none :disabled true} "--- Select ---"]
       [:option {:value :low} "Low"]
       [:option {:value :moderate} "Moderate"]
       [:option {:value :high} "High"]]]]
