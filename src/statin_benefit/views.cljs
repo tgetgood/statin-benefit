@@ -152,8 +152,8 @@
 
    [:div.row
     [:div.columns.six
-     [:label {:for "statins"} "Statin Treatement Intensity"]
-     [:select#statins {:default-value :none
+     [:label {:for "intensity"} "Statin Treatement Intensity"]
+     [:select#intensity {:default-value :none
                        :class (validation :intensity)
                        :on-change (pass-off ::ev/intensity)}
       [:option {:value :none :disabled true} "--- Select ---"]
