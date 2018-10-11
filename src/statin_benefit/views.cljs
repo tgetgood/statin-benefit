@@ -134,19 +134,33 @@
    [:div.row
     [:h4 "Results"]]
 
-   [:div.row
-    [:div.columns.four
-     [:span "Untreated survival: " (dsub ::subs/untreated-survival)]]
-    [:div.columns.four
-     [:span "Untreated risk: " (dsub ::subs/untreated-risk)]]]
-   [:div.row
-    [:div.columns.four
-     [:span "Treated survival: " (dsub ::subs/treated-survival)]]
-    [:div.columns.four
-     [:span "Treated risk: " (dsub ::subs/treated-risk)]]]
-
-   [:div.row
-    [:div.columns.four
-     [:span "Risk Reduction: " (dsub ::subs/reduction)]]
-    [:div.columns.four
-     [:span "Relative Risk Reduction: " (dsub ::subs/reduction-percentage)]]]])
+   (if @(re-frame/subscribe [::subs/filled?])
+     [:div
+      [:div.row
+       [:table.u-full-width
+        [:thead
+         [:tr
+          [:th ""]
+          [:th [:strong "Survival"]]
+          [:th [:strong "Risk"]]]]
+        [:tbody
+         [:tr
+          [:td [:strong "Without Treatment"]]
+          [:td (dsub ::subs/untreated-survival)]
+          [:td (dsub ::subs/untreated-risk)]]
+         [:tr
+          [:td [:strong "With Treatment"]]
+          [:td (dsub ::subs/treated-survival)]
+          [:td (dsub ::subs/treated-risk)]]]]]
+      [:div.vspacer]
+      [:div.row
+       [:table.u-full-width
+        [:thead
+         [:tr
+          [:td [:strong "Increased likelihood of Survival"]]
+          [:td [:strong "Relative Risk Reduction"]]]]
+        [:tbody
+         [:tr
+          [:td (dsub ::subs/risk-reduction)]
+          [:td (dsub ::subs/risk-reduction-percentage)]]]]]]
+     [:div "Fill in the form to see your results."])])
