@@ -63,7 +63,7 @@
      [:label {:for "bp"} "Blood Pressure"]
      [:div#bp
       [:span
-       [:input.bp-input
+       [:input#bp-systolic.bp-input
         {:type :number
          :min 0
          :class (validation :bp-systolic)
@@ -72,7 +72,7 @@
          :on-change (pass-off ::ev/bp-systolic)}]]
       [:span.slash " / "]
       [:span
-       [:input.bp-input
+       [:input#bp-diastolic.bp-input
         {:type :number
          :min 0
          :placeholder 80
@@ -98,18 +98,18 @@
     [:label {:for "cholesterol"} "Cholesterol:"]
     [:div#cholesterol.row
      [:div.columns.three
-      [:label {:for "total"} "Total"]
-      [:input#total.u-full-width {:type :number :min 0
+      [:label {:for "total-c"} "Total"]
+      [:input#total-c.u-full-width {:type :number :min 0
                                   :class (validation :total-c)
                                    :on-change (pass-off ::ev/total-c)}]]
      [:div.columns.three
-      [:label {:for "ldl"} "LDL"]
-      [:input#ldl.u-full-width {:type :number :min 0
+      [:label {:for "ldl-c"} "LDL"]
+      [:input#ldl-c.u-full-width {:type :number :min 0
                                 :class (validation :ldl-c)
                                 :on-change (pass-off ::ev/ldl-c)}]]
      [:div.columns.three
-      [:label {:for "hdl"} "HDL"]
-      [:input#hdl.u-full-width {:type :number :min 0
+      [:label {:for "hdl-c"} "HDL"]
+      [:input#hdl-c.u-full-width {:type :number :min 0
                                 :class (validation :hdl-c)
                                  :on-change (pass-off ::ev/hdl-c)}]]
      [:div.columns.three
@@ -140,11 +140,11 @@
               :class (validation :diabetic?)}
       "Are you diabetic?"]
      [:div#diabetic.row
-      [:input {:type :radio :name :diabetic :value 1
+      [:input {:type :radio :name :diabetic? :value 1
                :on-change (pass-off ::ev/diabetic?)}]
       " Yes"
       [:span.hspacer " "]
-      [:input {:type :radio :name :diabetic :value 0
+      [:input {:type :radio :name :diabetic? :value 0
                :on-change (pass-off ::ev/diabetic?)}]
       " No"]]]
 
