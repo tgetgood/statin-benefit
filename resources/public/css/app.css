@@ -6,7 +6,6 @@
 		padding-top: 2em;
 }
 
-
 .bp-input {
 		width: 40%;
 }
@@ -15,17 +14,16 @@ input[type="number"].invalid {
 		border: 1px solid red;
 }
 
-input[type="number"].incomplete {
+input[type="number"].incomplete, select.incomplete {
 		border: 2px solid #D5C0C0;
 }
 
-select.incomplete {
-		border: 2px solid #D5C0C0;
+input[type="number"]:focus.incomplete, select:focus.incomplete {
+		border: 2px solid #33C3F0
 }
 
 label.incomplete {
 		text-decoration: underline solid #D5C0C0;;
-
 }
 
 .slash {
