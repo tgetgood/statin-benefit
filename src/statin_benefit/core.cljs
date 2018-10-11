@@ -1,9 +1,9 @@
 (ns ^:figwheel-hooks statin-benefit.core
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [reagent.dom.server :as rds]
             [statin-benefit.config :as config]
             [statin-benefit.events :as events]
+            [statin-benefit.loader :as loader]
             [statin-benefit.views :as views]))
 
 (defn dev-setup []
@@ -17,9 +17,9 @@
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
-  (re-frame/dispatch-sync [::events/initialize-db])
+  (re-frame/dispatch-sync [::events/initialize-db {:c-units :mmol-l}])
   (dev-setup)
   (mount-root))
 
-(defn render-to-str []
-  (rds/render-to-string [views/main-panel]))
+(defn ^:export hydrate []
+  (loader/hydrate [views/main-panel] (.getElementById js/document "app")))

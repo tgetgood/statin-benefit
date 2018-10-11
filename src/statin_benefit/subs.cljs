@@ -1,7 +1,7 @@
 (ns statin-benefit.subs
   (:require [re-frame.core :as re-frame]
-            [statin-benefit.events :as events]
-            [statin-benefit.risk :as risk]))
+            [statin-benefit.risk :as risk]
+            [statin-benefit.validation :as validation]))
 
 (re-frame/reg-sub
  ::untreated-survival
@@ -39,20 +39,10 @@
  (fn [[untreated reduction] _]
    (/ reduction untreated)))
 
-(def required-keys
-  (->> (dissoc events/evs ::events/bp-diastolic)
-       keys
-       (map name)
-       (map keyword)))
-
-(defn valid? [x]
-  (and (not (nil? x))
-       (or (not (number? x)) (not (js/isNaN x)))))
-
 (re-frame/reg-sub
  ::filled?
  (fn [db]
-   (every? #(valid? (get db %)) required-keys)))
+   (every? #(validation/valid? (get db %)) validation/required-keys)))
 
 (re-frame/reg-sub
  ::validation
@@ -60,5 +50,5 @@
    (let [v (get db k)]
      (if (nil? v)
        "incomplete"
-       (when-not (valid? v)
+       (when-not (validation/valid? v)
          "invalid")))))

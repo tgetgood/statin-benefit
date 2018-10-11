@@ -1,36 +1,15 @@
 (ns statin-benefit.events
-  (:refer-clojure :exclude [int])
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [statin-benefit.validation :as validation]))
 
 (re-frame/reg-event-db
  ::initialize-db
- (fn [_ _]
-   {:c-units :mmol-l}))
-
-(defn int [x]
-  (js/parseInt x))
-
-(defn bool [x]
-  (= "1" x))
-
-(def evs
-  {::age          int
-   ::sex          keyword
-   ::ethnicity    keyword
-   ::bp-systolic  int
-   ::bp-diastolic int
-   ::hypertension bool
-   ::total-c      int
-   ::ldl-c        int
-   ::hdl-c        int
-   ::c-units      keyword
-   ::smoker?      bool
-   ::diabetic?    bool
-   ::intensity    keyword})
+ (fn [_ [_ v]]
+   v))
 
 (run! (fn [[ev format]]
         (re-frame/reg-event-db
-         ev
+         (keyword (namespace ::x) ev)
          (fn [db [_ n]]
-           (assoc db (keyword (name ev)) (format n)))))
-      evs)
+           (assoc db ev (format n)))))
+      validation/fields)

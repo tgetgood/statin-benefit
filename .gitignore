@@ -5,3 +5,5 @@
 out
 .cpcache
 .nrepl-port
+.nrepl-port
+/resources/public/production
