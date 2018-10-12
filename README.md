@@ -3,7 +3,7 @@
 A calculator to estimate the health benefits of taking statins for controlling
 cholesterol.
 
-Try it out [here](https://tgetgood.github.io/statin-benefit/resources/production/index.html).
+Try it out [here](https://tgetgood.github.io/statin-benefit/resources/public/production/index.html).
 
 ## References
 

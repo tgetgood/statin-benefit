@@ -57,9 +57,8 @@
        (comp)
        container
        (fn []
-         (re-frame/dispatch-sync
+         (re-frame/dispatch
           [:statin-benefit.events/initialize-db (grab-values-from-dom)])
-
          (binding [reagent.impl.util/*always-update* false]
            (swap! reagent.dom/roots assoc container [comp container])
            (reagent.impl.batching/flush-after-render)))))))

@@ -113,8 +113,8 @@
                                 :class (validation :hdl-c)
                                  :on-change (pass-off ::ev/hdl-c)}]]
      [:div.columns.three
-      [:label {:for "units"} "Units"]
-      [:select#units {:on-change (pass-off ::ev/c-units)
+      [:label {:for "c-units"} "Units"]
+      [:select#c-units {:on-change (pass-off ::ev/c-units)
                       :default-value :mmol-l}
        [:option {:value :mmol-l} "mmol/L"]
        [:option {:value :mg-dl} "mg/dL"]]]]]
