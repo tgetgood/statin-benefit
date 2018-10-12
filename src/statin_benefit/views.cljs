@@ -1,7 +1,12 @@
 (ns statin-benefit.views
   (:require [re-frame.core :as re-frame]
             [statin-benefit.events :as ev]
-            [statin-benefit.subs :as subs]))
+            [statin-benefit.subs :as subs]
+            [statin-benefit.translation :as translation :refer [t]]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Subscription wrappers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn percentage [x]
   [:span (str (.toFixed (* 100 x) 2) "%")])
@@ -17,8 +22,24 @@
   (percentage
    @(re-frame/subscribe [k])))
 
-(defn main-panel []
-  [:div.container
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Components
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn statin-dosing []
+  [:div.row
+   [:div.columns.six
+    [:label {:for "intensity"} "Statin Treatement Intensity"]
+    [:select#intensity {:default-value :none
+                        :class           (validation :intensity)
+                        :on-change       (pass-off ::ev/intensity)}
+     [:option {:value :none :disabled true} "--- Select ---"]
+     [:option {:value :low} "Low"]
+     [:option {:value :moderate} "Moderate"]
+     [:option {:value :high} "High"]]]])
+
+(defn form []
+  [:div
    [:div.row
     [:div.columns.three
      [:label {:for "age"} "Age"]
@@ -150,49 +171,76 @@
 
    [:div.vspacer]
 
+   [statin-dosing]]
+
+  )
+
+(defn results []
+  [:div
    [:div.row
-    [:div.columns.six
-     [:label {:for "intensity"} "Statin Treatement Intensity"]
-     [:select#intensity {:default-value :none
-                       :class (validation :intensity)
-                       :on-change (pass-off ::ev/intensity)}
-      [:option {:value :none :disabled true} "--- Select ---"]
-      [:option {:value :low} "Low"]
-      [:option {:value :moderate} "Moderate"]
-      [:option {:value :high} "High"]]]]
+    [:h4 "Results"]
 
-   [:div.vspacer]
+    (if @(re-frame/subscribe [::subs/filled?])
+      [:div
+       [:div.row
+        [:table.u-full-width
+         [:thead
+          [:tr
+           [:th ""]
+           [:th [:strong "Survival"]]
+           [:th [:strong "Risk"]]]]
+         [:tbody
+          [:tr
+           [:td [:strong "Without Treatment"]]
+           [:td (dsub ::subs/untreated-survival)]
+           [:td (dsub ::subs/untreated-risk)]]
+          [:tr
+           [:td [:strong "With Treatment"]]
+           [:td (dsub ::subs/treated-survival)]
+           [:td (dsub ::subs/treated-risk)]]]]]
+       [:div.vspacer]
+       [:div.row
+        [:table.u-full-width
+         [:thead
+          [:tr
+           [:td [:strong "Increased likelihood of Survival"]]
+           [:td [:strong "Relative Risk Reduction"]]]]
+         [:tbody
+          [:tr
+           [:td (dsub ::subs/risk-reduction)]
+           [:td (dsub ::subs/risk-reduction-percentage)]]]]]]
+      [:div "Fill in the form to see your results."])]]  )
 
-   [:div.row
-    [:h4 "Results"]]
+(defn language-switch []
+  (let [[text switch-to] (translation/switcher)]
+    [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
+     text]))
 
-   (if @(re-frame/subscribe [::subs/filled?])
-     [:div
-      [:div.row
-       [:table.u-full-width
-        [:thead
-         [:tr
-          [:th ""]
-          [:th [:strong "Survival"]]
-          [:th [:strong "Risk"]]]]
-        [:tbody
-         [:tr
-          [:td [:strong "Without Treatment"]]
-          [:td (dsub ::subs/untreated-survival)]
-          [:td (dsub ::subs/untreated-risk)]]
-         [:tr
-          [:td [:strong "With Treatment"]]
-          [:td (dsub ::subs/treated-survival)]
-          [:td (dsub ::subs/treated-risk)]]]]]
-      [:div.vspacer]
-      [:div.row
-       [:table.u-full-width
-        [:thead
-         [:tr
-          [:td [:strong "Increased likelihood of Survival"]]
-          [:td [:strong "Relative Risk Reduction"]]]]
-        [:tbody
-         [:tr
-          [:td (dsub ::subs/risk-reduction)]
-          [:td (dsub ::subs/risk-reduction-percentage)]]]]]]
-     [:div "Fill in the form to see your results."])])
+(defn copyright []
+  ;; TODO: figure out who
+  (str '\u00A9 " The Authors. Released under LGPL-3.0"))
+
+(defn links []
+  [:div.row
+   [:div.columns.six [copyright]]
+   [:div.columns.three
+    [:a {:href "https://github.com/tgetgood/statin-benefit#references"}
+     (t "References")]]
+   [:div.columns.three
+    [:a {:href "https://github.com/tgetgood/statin-benefit"}
+     (t "Source Code")]]])
+
+(defn title-bar []
+  [:div
+   [:h3 (t "Personalised Statin Benefit Calculator")]
+   [:div.u-pull-right [language-switch]]])
+
+(defn main-panel []
+  [:div.container
+   [title-bar]
+   [:hr]
+   [form]
+   [:hr]
+   [results]
+   [:hr]
+   [links]])
