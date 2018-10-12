@@ -51,15 +51,14 @@
         (dissoc validation/fields :sex)))
 
 (defn hydrate [component container]
-  (re-frame/dispatch-sync
-          [:statin-benefit.events/initialize-db (grab-values-from-dom)])
-
   (let [comp  (fn [] (reagent.impl.template/as-element component))]
     (binding [reagent.impl.util/*always-update* true]
       (react-dom/hydrate
        (comp)
        container
        (fn []
+         (re-frame/dispatch
+          [:statin-benefit.events/initialize-db (grab-values-from-dom)])
          (binding [reagent.impl.util/*always-update* false]
            (swap! reagent.dom/roots assoc container [comp container])
            (reagent.impl.batching/flush-after-render)))))))
