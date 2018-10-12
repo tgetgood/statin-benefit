@@ -12,31 +12,50 @@
   @(re-frame/subscribe [::subs/lang]))
 
 (def phrasebook
-  {"Personalised Statin Benefit Calculator" "Prestation des Statines Personnalisée"
+  {"Personalised Statin Benefit Calculator"
+   "Calculateur de l'Avantage des Statines Personnalisée"
 
-   "Source Code" "Code Source"
-   "References"  "Matériel de Référence"
+   "Are you currently being treated for hypertension?"
+   "Êtes-vous actuellement en traitement pour l'hypertension?"
 
-   "Age"       "Âge"
-   "Ethnicity" "Ethnie"
+   "Fill in the form to see your results."
+   "Complétez le formulaire pour voir vos résultats."
 
-   "Sex"    "Sexe"
-   "Male"   "Mâle"
-   "Female" "Femelle"
+   "Do you currently smoke?"    "Fumez-vous actuellement?"
+   "Are you diabetic?"          "Êtes-vous diab‌étique?"
+   "Statin Treatment Intensity" "Dosage des Statines"
 
-   "Blood Pressure" "Tension Artérielle"
+   "Source Code"      "Code Source"
+   "References"       "Références"
+   "Age"              "Âge"
+   "Ethnicity"        "Ethnie"
+   "White"            "Blanc / Blanche"
+   "African American" "Noir / Noire"
+   "Sex"              "Sexe"
+   "Male"             "Mâle"
+   "Female"           "Femelle"
+   "Blood Pressure"   "Tension Artérielle"
+   "Yes"              "Oui"
+   "No"               "Non"
+   "Cholesterol"      "Cholestérol"
+   "Total"            "Total"
+   "Units"            "Unités"
+   "Select"           "Choisir"
+   "Low"              "Faible"
+   "Moderate"         "Moyen"
+   "High"             "Haute"
+   "Results"          "Résultats"
+   "Survival"         "Survie"
+   "Risk"             "Risque"
 
-   "Currently being treated for hypertension?"
-   "Actuellement en traitement pour l'hypertension"
+   "With Treatment" "Avec Traitement"
+   "Without Treatment" "Sans Traitement"
 
-   "Yes" "Oui"
-   "No"  "Non"
+   "Increased likelihood of Survival" "Avantage pour la survie"
+   "Relative Risk Reduction" "Réduction du risque relatif"
 
-   "Select"   "choisir"
-   "Low"      "Faible"
-   "Moderate" "Moyen"
-   "High"     "Haute"
-   })
+   "The authors"                 "Les auteurs"
+   "Released under the LGPL-3.0" "Distribué sous le LGPL-3.0"})
 
 (defn t [text]
   (let [lang (current)]

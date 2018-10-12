@@ -29,11 +29,11 @@
 (defn statin-dosing []
   [:div.row
    [:div.columns.six
-    [:label {:for "intensity"} (t "Statin Treatement Intensity")]
+    [:label {:for "intensity"} (t "Statin Treatment Intensity")]
     [:select#intensity {:default-value :none
                         :class           (validation :intensity)
                         :on-change       (pass-off ::ev/intensity)}
-     [:option {:value :none :disabled true} "--- " (t "Select") " ---"]
+     [:option {:value "" :disabled true} "--- " (t "Select") " ---"]
      [:option {:value :low} (t "Low")]
      [:option {:value :moderate} (t "Moderate")]
      [:option {:value :high} (t "High")]]]])
@@ -105,7 +105,7 @@
     [:div.columns.seven
      [:label {:for   "bp-treatment"
               :class (validation :hypertension)}
-      (t "Currently being treated for hypertension?")]
+      (t "Are you currently being treated for hypertension?")]
      [:div#bp-treatment.row
       [:input {:type       :radio :name :hypertension :value 1
                :on-change (pass-off ::ev/hypertension)}]
@@ -120,7 +120,7 @@
    [:div.vspacer]
 
    [:div.row
-    [:label {:for "cholesterol"} (t "Cholesterol:")]
+    [:label {:for "cholesterol"} (t "Cholesterol") ":"]
     [:div#cholesterol.row
      [:div.columns.three
       [:label {:for "total-c"} (t "Total")]
@@ -128,12 +128,12 @@
                                     :class      (validation :total-c)
                                     :on-change (pass-off ::ev/total-c)}]]
      [:div.columns.three
-      [:label {:for "ldl-c"} (t "LDL")]
+      [:label {:for "ldl-c"} "LDL"]
       [:input#ldl-c.u-full-width {:type    :number :min 0
                                   :class     (validation :ldl-c)
                                   :on-change (pass-off ::ev/ldl-c)}]]
      [:div.columns.three
-      [:label {:for "hdl-c"} (t "HDL")]
+      [:label {:for "hdl-c"} "HDL"]
       [:input#hdl-c.u-full-width {:type     :number :min 0
                                   :class      (validation :hdl-c)
                                   :on-change (pass-off ::ev/hdl-c)}]]
@@ -224,7 +224,7 @@
 
 (defn copyright []
   ;; TODO: figure out who
-  (str '\u00A9 " " (t "The Authors. Released under LGPL-3.0")))
+  (str '\u00A9 " " (t "The authors") ". " (t "Released under the LGPL-3.0")))
 
 (defn links []
   [:div.row
