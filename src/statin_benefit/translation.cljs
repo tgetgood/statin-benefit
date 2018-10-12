@@ -13,8 +13,29 @@
 
 (def phrasebook
   {"Personalised Statin Benefit Calculator" "Prestation des Statines Personnalisée"
+
    "Source Code" "Code Source"
-   "References" "Matériel de Référence"
+   "References"  "Matériel de Référence"
+
+   "Age"       "Âge"
+   "Ethnicity" "Ethnie"
+
+   "Sex"    "Sexe"
+   "Male"   "Mâle"
+   "Female" "Femelle"
+
+   "Blood Pressure" "Tension Artérielle"
+
+   "Currently being treated for hypertension?"
+   "Actuellement en traitement pour l'hypertension"
+
+   "Yes" "Oui"
+   "No"  "Non"
+
+   "Select"   "choisir"
+   "Low"      "Faible"
+   "Moderate" "Moyen"
+   "High"     "Haute"
    })
 
 (defn t [text]

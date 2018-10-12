@@ -33,7 +33,7 @@
     [:select#intensity {:default-value :none
                         :class           (validation :intensity)
                         :on-change       (pass-off ::ev/intensity)}
-     [:option {:value :none :disabled true} (t "--- Select ---")]
+     [:option {:value :none :disabled true} "--- " (t "Select") " ---"]
      [:option {:value :low} (t "Low")]
      [:option {:value :moderate} (t "Moderate")]
      [:option {:value :high} (t "High")]]]])
@@ -58,7 +58,7 @@
      [:select#ethnicity.u-full-width {:on-change     (pass-off ::ev/ethnicity)
                                       :class         (validation :ethnicity)
                                       :default-value :none}
-      [:option {:disabled true :value :none} (t "--- Select ---")]
+      [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
       [:option {:value :black} (t "African American")]
       [:option {:value :white} (t "White")]]]
 
