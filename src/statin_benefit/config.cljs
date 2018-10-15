@@ -1,4 +1,5 @@
-(ns statin-benefit.config)
+(ns statin-benefit.config
+  (:require [goog.object :as obj]))
 
-(def debug?
-  ^boolean goog.DEBUG)
+(def startup-lang
+  (keyword (obj/get (js/document.querySelector "html") "lang")))

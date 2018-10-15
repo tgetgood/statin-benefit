@@ -1,6 +1,7 @@
 (ns statin-benefit.views
   (:require [re-frame.core :as re-frame]
             [statin-benefit.events :as ev]
+            [statin-benefit.config :as config]
             [statin-benefit.subs :as subs]
             [statin-benefit.translation :as translation :refer [t]]))
 
@@ -214,9 +215,15 @@
       [:div (t "Fill in the form to see your results.")])]])
 
 (defn language-switch []
-  (let [[text switch-to] (translation/switcher)]
-    [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
-     text]))
+  (if-let [lang (translation/current)]
+    (let [[text switch-to] (translation/switcher lang)]
+      [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
+       text])
+    (let [[text switch-to] (translation/switcher config/startup-lang)]
+      [:a {:href (if (= switch-to :en)
+                   "../index.html"
+                   "fr/index.html")}
+       text])))
 
 (defn copyright []
   ;; TODO: figure out who

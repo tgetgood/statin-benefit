@@ -3,6 +3,7 @@
   the DOM in the event the internet is so slow that the user starts to fill the
   form before the js has loaded."
   (:require [goog.object :as obj]
+            [re-frame.core :as re-frame]
             [react-dom :as react-dom]
             reagent.dom
             [reagent.dom.server :as rds]
@@ -10,8 +11,7 @@
             reagent.impl.template
             reagent.impl.util
             [statin-benefit.validation :as validation]
-            [statin-benefit.views :as views]
-            [re-frame.core :as re-frame]))
+            [statin-benefit.views :as views]))
 
 (defn grab-int [id]
   (validation/int
@@ -41,9 +41,9 @@
   "Returns the values of all inputs in the dom. Only useful is the js is very
   slow to load."
   []
-  (into (if-let [v (grab-radio :sex)]
-          {:sex (keyword v)}
-          {})
+  (into (merge {}
+               (when-let [v (grab-radio :sex)]
+                 {:sex (keyword v)}))
         (map (fn [[k t]]
                (let [v ((get grabbers t) (name k))]
                  (when (validation/valid? v)

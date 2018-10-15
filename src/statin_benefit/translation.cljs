@@ -6,6 +6,7 @@
   The danger is that chauvanism creeps in easily when people think that some
   things don't need translating..."
   (:require [re-frame.core :as re-frame]
+            [statin-benefit.config :as config]
             [statin-benefit.subs :as subs]))
 
 (defn current []
@@ -58,7 +59,7 @@
    "Released under the LGPL-3.0" "Distribué sous le LGPL-3.0"})
 
 (defn t [text]
-  (let [lang (current)]
+  (let [lang (or (current) config/startup-lang)]
     (if (= lang :en)
       text
       (if-let [p (get phrasebook text)]
@@ -69,7 +70,7 @@
   "Returns a pair of text and language key for the language currently not in
   use.
   N.B.: This assumes only English and French are options."
-  []
-  (if (= :en (current))
+  [lang]
+  (if (= :en lang)
     ["version française" :fr]
     ["english version" :en]))
