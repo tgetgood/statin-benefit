@@ -18,7 +18,7 @@
 
 (def dev-default-db
   {:c-units :mmol-l
-   :lang :en})
+   :lang    :en})
 
 (defn init []
   (re-frame/dispatch-sync [::events/initialize-db dev-default-db])

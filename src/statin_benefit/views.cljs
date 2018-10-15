@@ -185,7 +185,6 @@
   [:div
    [:div.row
     [:h4 (t "Results")]
-
     (if @(re-frame/subscribe [::subs/filled?])
       [:div
        [:div.row
@@ -193,29 +192,26 @@
          [:thead
           [:tr
            [:th ""]
-           [:th [:strong (t "Survival")]]
-           [:th [:strong (t "Risk")]]]]
+           [:th [:strong (t "10 Year ASCVD Risk")]]
+           [:th [:strong (t "30 Year ASCVD Risk")]]]]
          [:tbody
           [:tr
-           [:td [:strong (t "Without Treatment")]]
-           [:td (dsub ::subs/untreated-survival)]
-           [:td (dsub ::subs/untreated-risk)]]
+           [:td [:strong (t "Without Statins")]]
+           [:td (dsub ::subs/untreated-risk)]
+           [:td "?"]]
           [:tr
-           [:td [:strong (t "With Treatment")]]
-           [:td (dsub ::subs/treated-survival)]
-           [:td (dsub ::subs/treated-risk)]]]]]
-       [:div.vspacer]
-       [:div.row
-        [:table.u-full-width
-         [:thead
+           [:td [:strong (t "With Statins")]]
+           [:td (dsub ::subs/treated-risk)]
+           [:td "?"]]
           [:tr
-           [:td [:strong (t "Increased likelihood of Survival")]]
-           [:td [:strong (t "Relative Risk Reduction")]]]]
-         [:tbody
-          [:tr
+           [:td [:strong (t "Benefit of Statin Therapy")]]
            [:td (dsub ::subs/risk-reduction)]
-           [:td (dsub ::subs/risk-reduction-percentage)]]]]]]
-      [:div (t "Fill in the form to see your results.")])]]  )
+           [:td "?"]]
+          [:tr
+           [:td [:strong (t "Risk Reduction Factor")]]
+           [:td (dsub ::subs/risk-reduction-percentage)]
+           [:td "?"]]]]]]
+      [:div (t "Fill in the form to see your results.")])]])
 
 (defn language-switch []
   (let [[text switch-to] (translation/switcher)]
@@ -249,4 +245,5 @@
    [:hr]
    [results]
    [:hr]
-   [links]])
+   [links]
+   [:hr]])

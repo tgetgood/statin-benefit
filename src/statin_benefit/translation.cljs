@@ -45,14 +45,14 @@
    "Moderate"         "Moyen"
    "High"             "Haute"
    "Results"          "Résultats"
-   "Survival"         "Survie"
-   "Risk"             "Risque"
 
-   "With Treatment" "Avec Traitement"
-   "Without Treatment" "Sans Traitement"
+   "10 Year ASCVD Risk" "Risque sur 10 Ans"
+   "30 Year ASCVD Risk" "Risque sur 30 Ans"
+   "With Statins"       "Avec Statines"
+   "Without Statins"    "Sans Statines"
 
-   "Increased likelihood of Survival" "Avantage pour la survie"
-   "Relative Risk Reduction" "Réduction du risque relatif"
+   "Benefit of Statin Therapy" "Bénéfice de Statines"
+   "Risk Reduction Factor"     "Réduction du Risque Relatif"
 
    "The authors"                 "Les auteurs"
    "Released under the LGPL-3.0" "Distribué sous le LGPL-3.0"})
