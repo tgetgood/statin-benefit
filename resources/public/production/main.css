@@ -875,3 +875,11 @@ label.incomplete {
 		font-size: 2em;
 		vertical-align: sub;
 }
+
+.alarm {
+		background: hotpink;
+}
+
+.float-centre {
+		float: centre;
+}
