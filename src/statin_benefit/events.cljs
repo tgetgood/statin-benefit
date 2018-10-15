@@ -13,3 +13,8 @@
          (fn [db [_ n]]
            (assoc db ev (format n)))))
       validation/fields)
+
+(re-frame/reg-event-db
+ ::change-language
+ (fn [db [_ lang]]
+   (assoc db :lang lang)))

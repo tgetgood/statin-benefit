@@ -4,6 +4,11 @@
             [statin-benefit.validation :as validation]))
 
 (re-frame/reg-sub
+ ::lang
+ (fn [db]
+   (:lang db)))
+
+(re-frame/reg-sub
  ::untreated-survival
  (fn [db]
    (risk/untreated-survival db)))

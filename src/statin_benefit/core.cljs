@@ -16,8 +16,12 @@
   (reagent/render [views/main-panel]
                   (.getElementById js/document "app")))
 
-(defn ^:export init []
-  (re-frame/dispatch-sync [::events/initialize-db {:c-units :mmol-l}])
+(def dev-default-db
+  {:c-units :mmol-l
+   :lang    :en})
+
+(defn init []
+  (re-frame/dispatch-sync [::events/initialize-db dev-default-db])
   (dev-setup)
   (mount-root))
 
