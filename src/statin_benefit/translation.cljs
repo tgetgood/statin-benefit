@@ -14,7 +14,7 @@
 
 (def phrasebook
   {"Personalised Statin Benefit Calculator"
-   "Calculateur de l'Avantage des Statines Personnalisée"
+   "Calculateur de l'Avantage de Statines Personnalisée"
 
    "Are you currently being treated for hypertension?"
    "Êtes-vous actuellement en traitement pour l'hypertension?"
@@ -24,7 +24,7 @@
 
    "Do you currently smoke?"    "Fumez-vous actuellement?"
    "Are you diabetic?"          "Êtes-vous diab‌étique?"
-   "Statin Treatment Intensity" "Dosage des Statines"
+   "Statin Treatment Intensity" "Dosage de Statines"
 
    "Source Code"      "Code Source"
    "References"       "Références"
