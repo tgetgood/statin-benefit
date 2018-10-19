@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-test -d resources/production || mkdir resources/production
+test -d resources/public/production || mkdir resources/public/production
+
+pushd resources
+test -L production || ln -s public/production production
+popd
 
 cat resources/public/css/normalize.css resources/public/css/skeleton.css resources/public/css/app.css > resources/public/production/main.css
 
