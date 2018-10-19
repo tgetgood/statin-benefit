@@ -146,7 +146,7 @@
    :moderate 0.4
    :high     0.6})
 
-(defn treated-ldl [{:keys [ldl-c c-units intensity]}]
+(defn ldl-reduction [{:keys [ldl-c c-units intensity]}]
   (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (get intensity-table intensity)))
 
 (defn hazard-ration [survival]
@@ -156,4 +156,15 @@
   (let [us (untreated-survival stats)]
     (exp us
          (exp (hazard-ration us)
-              (treated-ldl stats)))))
+              (ldl-reduction stats)))))
+
+(defn test-benefit
+  "To compare the calculation to the graphs in the paper."
+  [risk ldl]
+  (let [untreated-survival (- 1 risk)]
+    (- (exp untreated-survival
+            (exp (hazard-ration untreated-survival)
+                 (ldl-reduction {:ldl-c ldl
+                                 :c-units :mg-dl
+                                 :intensity :moderate})))
+       untreated-survival)))
