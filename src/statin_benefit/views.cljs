@@ -34,7 +34,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn yes-no-radio
-  "Standard yes/no radio button."
+  "Yes/no radio button."
   [k question]
   [:div
      [:label {:for   (name k)
