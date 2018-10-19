@@ -31,10 +31,10 @@
   [:div.row
    [:div.columns.six
     [:label {:for "intensity"} (t "Statin Treatment Intensity")]
-    [:select#intensity {:default-value :none
-                        :class           (validation :intensity)
-                        :on-change       (pass-off ::ev/intensity)}
-     [:option {:value "" :disabled true} "--- " (t "Select") " ---"]
+    [:select#intensity {:on-change     (pass-off ::ev/intensity)
+                        :class         (validation :intensity)
+                        :default-value :none}
+     [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
      [:option {:value :low} (t "Low")]
      [:option {:value :moderate} (t "Moderate")]
      [:option {:value :high} (t "High")]]]])
