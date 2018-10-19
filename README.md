@@ -1,4 +1,4 @@
-# Individualized Statin Benefit Calculator
+# MUHC - Duke Statin Benefit Calculator
 
 > Current guidelines recommend statins in the primary prevention of
 > cardiovascular disease on the basis of predicted cardiovascular risk without
@@ -23,7 +23,7 @@ calculated in [the paper][1].
 
 ## License
 
-Copyright © 2018 the Authors.
+Copyright © 2018 George Thanassoulis, Michael J. Pencina, and Allan D. Sniderman
 
 Distributed under the LGPL-3.0.
 
