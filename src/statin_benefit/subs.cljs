@@ -31,11 +31,11 @@
    (- 1 v)))
 
 (re-frame/reg-sub
- ::risk-reduction
+ ::number-to-treat
  :<- [::treated-risk]
  :<- [::untreated-risk]
  (fn [[treated untreated] _]
-   (- untreated treated)))
+   (/ 1 (- untreated treated))))
 
 (re-frame/reg-sub
  ::risk-reduction-percentage
@@ -54,6 +54,6 @@
  (fn [db [_ k]]
    (let [v (get db k)]
      (if (nil? v)
-       "incomplete"
+       " incomplete"
        (when-not (validation/valid? v)
-         "invalid")))))
+         " invalid")))))

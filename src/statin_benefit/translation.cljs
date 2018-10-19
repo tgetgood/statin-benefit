@@ -13,8 +13,8 @@
   @(re-frame/subscribe [::subs/lang]))
 
 (def phrasebook
-  {"Personalised Statin Benefit Calculator"
-   "Calculateur de l'Avantage de Statines Personnalisée"
+  { "MUHC-Duke Statin Benefit Calculator"
+   "Calculateur de l'Avantage de Statines MUHC-Duke"
 
    "Are you currently being treated for hypertension?"
    "Êtes-vous actuellement en traitement pour l'hypertension?"
@@ -25,38 +25,34 @@
    "Do you currently smoke?"    "Fumez-vous actuellement?"
    "Are you diabetic?"          "Êtes-vous diab‌étique?"
    "Statin Treatment Intensity" "Dosage de Statines"
-
-   "Source Code"      "Code Source"
-   "References"       "Références"
-   "Age"              "Âge"
-   "Ethnicity"        "Ethnie"
-   "White"            "Blanc / Blanche"
-   "African American" "Noir / Noire"
-   "Sex"              "Sexe"
-   "Male"             "Mâle"
-   "Female"           "Femelle"
-   "Blood Pressure"   "Tension Artérielle"
-   "Yes"              "Oui"
-   "No"               "Non"
-   "Cholesterol"      "Cholestérol"
-   "Total"            "Total"
-   "Units"            "Unités"
-   "Select"           "Choisir"
-   "Low"              "Faible"
-   "Moderate"         "Moyen"
-   "High"             "Haute"
-   "Results"          "Résultats"
-
-   "10 Year ASCVD Risk" "Risque sur 10 Ans"
-   "30 Year ASCVD Risk" "Risque sur 30 Ans"
-   "With Statins"       "Avec Statines"
-   "Without Statins"    "Sans Statines"
-
-   "Benefit of Statin Therapy" "Bénéfice de Statines"
-   "Risk Reduction Factor"     "Réduction du Risque Relatif"
-
-   "The authors"                 "Les auteurs"
-   "Released under the LGPL-3.0" "Distribué sous le LGPL-3.0"})
+   "Source Code"                "Code Source"
+   "References"                 "Références"
+   "Age"                        "Âge"
+   "Ethnicity"                  "Ethnie"
+   "White"                      "Blanc / Blanche"
+   "African American"           "Noir / Noire"
+   "Sex"                        "Sexe"
+   "Male"                       "Mâle"
+   "Female"                     "Femelle"
+   "Blood Pressure"             "Tension Artérielle"
+   "Yes"                        "Oui"
+   "No"                         "Non"
+   "Pretreatment Cholesterol"   "Cholestérol Avant Traitement"
+   "Total"                      "Total"
+   "Units"                      "Unités"
+   "Select"                     "Choisir"
+   "Low"                        "Faible"
+   "Moderate"                   "Moyen"
+   "High"                       "Haute"
+   "Results"                    "Résultats"
+   "10 Year ASCVD Risk"         "Risque sur 10 Ans"
+   "30 Year ASCVD Risk"         "Risque sur 30 Ans"
+   "With Statins"               "Avec Statines"
+   "Without Statins"            "Sans Statines"
+   "Benefit of Statin Therapy"  "Bénéfice de Statines"
+   "Risk Reduction Factor"      "Réduction du Risque Relatif"
+   "The authors"                "Les auteurs"
+   "Released under the"         "Distribué sous le"})
 
 (defn t [text]
   (let [lang (or (current) config/startup-lang)]

@@ -12,32 +12,100 @@
 (defn percentage [x]
   [:span (str (.toFixed (* 100 x) 2) "%")])
 
+(defn events-key [k]
+  (keyword :statin-benefit.events (name k)))
+
 (defn pass-off [k]
   (fn [ev]
-    (re-frame/dispatch [k (-> ev .-target .-value)])))
+    (re-frame/dispatch [(events-key k) (-> ev .-target .-value)])))
 
 (defn validation [k]
   @(re-frame/subscribe [::subs/validation k]))
 
-(defn dsub [k]
+(defn percent-sub [k]
   (percentage
    @(re-frame/subscribe [k])))
+
+(defn num-sub [k]
+  [:span (str (.toFixed @(re-frame/subscribe [k]) 0))])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn yes-no-radio
+  "Standard yes/no radio button."
+  [k question]
+  [:div
+     [:label {:for   (name k)
+              :class (validation k)}
+      question]
+     [:div {:id (name k) :class "row"}
+      [:input {:type      :radio :name k :value 1
+               :on-change (pass-off k)}]
+      [:span " "]
+      (t "Yes")
+      [:span.hspacer " "]
+      [:input {:type      :radio :name k :value 0
+               :on-change (pass-off k)}]
+      [:span " "]
+      (t "No")]])
+
+(defn number-box
+  "Numerical input box."
+  [k label]
+  [:div
+   [:label {:for (name k)} label]
+   [:input.u-full-width {:id        (name k)
+            :type      :number :min 0
+            :class     (validation k)
+            :on-change (pass-off k)}]])
+
+(defn select
+  "Standard HTML select"
+  [k label opts & [default]]
+  (let [options (map (fn [[k v]] [:option {:value k} v]) opts)]
+    [:div
+     [:label {:for (name k)} label]
+     (into [:select {:id (name k)
+                     :on-change   (pass-off k)
+                     :default-value (or default :none)}]
+           (if default
+             options
+             (cons
+              [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
+              options)))]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Main View
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn statin-dosing []
   [:div.row
    [:div.columns.six
-    [:label {:for "intensity"} (t "Statin Treatment Intensity")]
-    [:select#intensity {:on-change     (pass-off ::ev/intensity)
-                        :class         (validation :intensity)
-                        :default-value :none}
-     [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
-     [:option {:value :low} (t "Low")]
-     [:option {:value :moderate} (t "Moderate")]
-     [:option {:value :high} (t "High")]]]])
+    [select :intensity (t "Statin Treatment Intensity")
+     {:low (t "Low")
+      :moderate (t "Moderate")
+      :high (t "High")}]]])
+
+(defn cholesterol []
+  [:div
+   [:div.row
+    [yes-no-radio :currently-treated? (t "Are you currently taking statins?")]]
+   [:div.vspacer]
+
+   [:div.row
+    [:label {:for "cholesterol"} (t "Pretreatment Cholesterol") ":"]
+    [:div#cholesterol.row
+     [:div.columns.three [number-box :total-c (t "Total")]]
+     [:div.columns.three [number-box :ldl-c "LDL-C"]]
+     [:div.columns.three [number-box :hdl-c "HDL-C"]]
+     [:div.columns.three
+      [select :c-units (t "Units") {:mmol-l "mmol/L" :mg-dl "mg/dL"} :mmol-l]]]]
+
+   [:div.vspacer]
+
+   [statin-dosing]])
 
 (defn form []
   [:div
@@ -49,19 +117,14 @@
        :min         1
        :step        1
        :max         120
-       :pattern     "[1-9][0-9]{1,2}"
        :class       (validation :age)
        :placeholder 50
-       :on-change   (pass-off ::ev/age)}]]
+       :on-change   (pass-off :age)}]]
 
     [:div.columns.four
-     [:label {:for "ethnicity"} (t "Ethnicity")]
-     [:select#ethnicity.u-full-width {:on-change     (pass-off ::ev/ethnicity)
-                                      :class         (validation :ethnicity)
-                                      :default-value :none}
-      [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
-      [:option {:value :black} (t "African American")]
-      [:option {:value :white} (t "White")]]]
+     [select :ethnicity  (t "Ethnicity")
+      {:black (t "African American")
+       :white (t "White")}]]
 
     [:div.columns.five
      [:label {:for   "sex"
@@ -70,13 +133,13 @@
      [:div#sex.row.u-full-width
       [:span
        [:input {:type      :radio :name :sex :value :male
-                :on-change (pass-off ::ev/sex)}]
+                :on-change (pass-off :sex)}]
        [:span " "]
        (t "Male")]
       [:span.hspacer " "]
       [:span
        [:input {:type       :radio :name :sex :value :female
-                :on-change (pass-off ::ev/sex)}]
+                :on-change (pass-off :sex)}]
        [:span " "]
        (t "Female")]]]]
 
@@ -92,95 +155,30 @@
          :min         0
          :class       (validation :bp-systolic)
          :placeholder 120
-         :pattern     "[1-9][0-9]{1,2}"
-         :on-change   (pass-off ::ev/bp-systolic)}]]
+         :on-change   (pass-off :bp-systolic)}]]
       [:span.slash " / "]
       [:span
        [:input#bp-diastolic.bp-input
         {:type        :number
          :min         0
          :placeholder 80
-         :pattern     "[1-9][0-9]{1,2}"
-         :on-change   (pass-off ::ev/bp-diastolic)}]]]]
+         :on-change   (pass-off :bp-diastolic)}]]]]
 
     [:div.columns.seven
-     [:label {:for   "bp-treatment"
-              :class (validation :hypertension)}
-      (t "Are you currently being treated for hypertension?")]
-     [:div#bp-treatment.row
-      [:input {:type       :radio :name :hypertension :value 1
-               :on-change (pass-off ::ev/hypertension)}]
-      [:span " "]
-      (t "Yes")
-      [:span.hspacer " "]
-      [:input {:type       :radio :name :hypertension :value 0
-               :on-change (pass-off ::ev/hypertension)}]
-      [:span " "]
-      (t "No")]]]
-
-   [:div.vspacer]
-
-   [:div.row
-    [:label {:for "cholesterol"} (t "Cholesterol") ":"]
-    [:div#cholesterol.row
-     [:div.columns.three
-      [:label {:for "total-c"} (t "Total")]
-      [:input#total-c.u-full-width {:type     :number :min 0
-                                    :class      (validation :total-c)
-                                    :on-change (pass-off ::ev/total-c)}]]
-     [:div.columns.three
-      [:label {:for "ldl-c"} "LDL"]
-      [:input#ldl-c.u-full-width {:type    :number :min 0
-                                  :class     (validation :ldl-c)
-                                  :on-change (pass-off ::ev/ldl-c)}]]
-     [:div.columns.three
-      [:label {:for "hdl-c"} "HDL"]
-      [:input#hdl-c.u-full-width {:type     :number :min 0
-                                  :class      (validation :hdl-c)
-                                  :on-change (pass-off ::ev/hdl-c)}]]
-     [:div.columns.three
-      [:label {:for "c-units"} (t "Units")]
-      [:select#c-units {:on-change   (pass-off ::ev/c-units)
-                        :default-value :mmol-l}
-       [:option {:value :mmol-l} "mmol/L"]
-       [:option {:value :mg-dl} "mg/dL"]]]]]
+     [yes-no-radio :hypertension
+      (t "Are you currently being treated for hypertension?")]]]
 
    [:div.vspacer]
 
    [:div.row
     [:div.columns.six
-     [:label {:for   "smoker"
-              :class (validation :smoker?)}
-      (t "Do you currently smoke?")]
-     [:div#smoker.row
-      [:input {:type      :radio :name :smoker? :value 1
-               :on-change (pass-off ::ev/smoker?)}]
-      [:span " "]
-      (t "Yes")
-      [:span.hspacer " "]
-      [:input {:type      :radio :name :smoker? :value 0
-               :on-change (pass-off ::ev/smoker?)}]
-      [:span " "]
-      (t "No")]]
-
+     [yes-no-radio :smoker? (t "Do you currently smoke?")]]
     [:div.columns.six
-     [:label {:for   "diabetic"
-              :class (validation :diabetic?)}
-      (t "Are you diabetic?")]
-     [:div#diabetic.row
-      [:input {:type      :radio :name :diabetic? :value 1
-               :on-change (pass-off ::ev/diabetic?)}]
-      [:span " "]
-      (t "Yes")
-      [:span.hspacer " "]
-      [:input {:type      :radio :name :diabetic? :value 0
-               :on-change (pass-off ::ev/diabetic?)}]
-      [:span " "]
-      (t "No")]]]
+     [yes-no-radio :diabetic? (t "Are you diabetic?")]]]
 
    [:div.vspacer]
 
-   [statin-dosing]])
+   [cholesterol]])
 
 (defn results []
   [:div
@@ -198,26 +196,27 @@
          [:tbody
           [:tr
            [:td [:strong (t "Without Statins")]]
-           [:td (dsub ::subs/untreated-risk)]
+           [:td (percent-sub ::subs/untreated-risk)]
            [:td "?"]]
           [:tr
            [:td [:strong (t "With Statins")]]
-           [:td (dsub ::subs/treated-risk)]
+           [:td (percent-sub ::subs/treated-risk)]
            [:td "?"]]
           [:tr
-           [:td [:strong (t "Benefit of Statin Therapy")]]
-           [:td (dsub ::subs/risk-reduction)]
+           [:td [:strong (t "Number to Treat to Prevent 1 Event")]]
+           [:td (num-sub ::subs/number-to-treat)]
+
            [:td "?"]]
           [:tr
            [:td [:strong (t "Risk Reduction Factor")]]
-           [:td (dsub ::subs/risk-reduction-percentage)]
+           [:td (percent-sub ::subs/risk-reduction-percentage)]
            [:td "?"]]]]]]
       [:div (t "Fill in the form to see your results.")])]])
 
 (defn language-switch []
   (if-let [lang (translation/current)]
     (let [[text switch-to] (translation/switcher lang)]
-      [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
+      [:a {:on-click #(re-frame/dispatch [:ev/change-language switch-to])}
        text])
     (let [[text switch-to] (translation/switcher config/startup-lang)]
       [:a {:href (if (= switch-to :en)
@@ -226,8 +225,13 @@
        text])))
 
 (defn copyright []
-  ;; TODO: figure out who
-  (str '\u00A9 " " (t "The authors") ". " (t "Released under the LGPL-3.0")))
+  [:div
+   [:p (str '\u00A9
+            "2018 George"'\u00A0 "Thanassoulis,"
+            " " "Michael" '\u00A0 "J." '\u00A0 "Pencina,"
+            " & " "Allan" '\u00A0 "D." '\u00A0 "Sniderman"
+            ". ")]
+   [:p (str (t "Released under the") " LGPL" '\u2011 "3.0")]])
 
 (defn links []
   [:div.row
@@ -241,7 +245,7 @@
 
 (defn title-bar []
   [:div
-   [:h3 (t "Personalised Statin Benefit Calculator")]
+   [:h3 (t "MUHC-Duke Statin Benefit Calculator")]
    [:div.u-pull-right [language-switch]]])
 
 (defn main-panel []
