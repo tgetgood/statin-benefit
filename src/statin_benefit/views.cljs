@@ -90,9 +90,9 @@
 
 (defn cholesterol []
   [:div
-   [:div.row
+   #_[:div.row
     [yes-no-radio :currently-treated? (t "Are you currently taking statins?")]]
-   [:div.vspacer]
+   #_[:div.vspacer]
 
    [:div.row
     [:label {:for "cholesterol"} (t "Pretreatment Cholesterol") ":"]
@@ -216,7 +216,7 @@
 (defn language-switch []
   (if-let [lang (translation/current)]
     (let [[text switch-to] (translation/switcher lang)]
-      [:a {:on-click #(re-frame/dispatch [:ev/change-language switch-to])}
+      [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
        text])
     (let [[text switch-to] (translation/switcher config/startup-lang)]
       [:a {:href (if (= switch-to :en)
@@ -227,9 +227,9 @@
 (defn copyright []
   [:div
    [:p (str '\u00A9
-            "2018 George"'\u00A0 "Thanassoulis,"
-            " " "Michael" '\u00A0 "J." '\u00A0 "Pencina,"
-            " & " "Allan" '\u00A0 "D." '\u00A0 "Sniderman"
+            "2018 George"'\u00A0 "Thanassoulis" ","
+            " " "Allan" '\u00A0 "D." '\u00A0 "Sniderman" ","
+            " & " "Michael" '\u00A0 "J." '\u00A0 "Pencina"
             ". ")]
    [:p (str (t "Released under the") " LGPL" '\u2011 "3.0")]])
 

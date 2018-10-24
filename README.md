@@ -23,7 +23,7 @@ calculated in [the paper][1].
 
 ## License
 
-Copyright © 2018 George Thanassoulis, Michael J. Pencina, and Allan D. Sniderman
+Copyright © 2018 George Thanassoulis, Allan D. Sniderman, and Michael J. Pencina
 
 Distributed under the LGPL-3.0.
 
