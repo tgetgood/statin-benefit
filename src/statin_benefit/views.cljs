@@ -227,7 +227,7 @@
 (defn copyright []
   [:div
    [:p (str '\u00A9
-            "2018 George"'\u00A0 "Thanassoulis" ","
+            " " "2018 George"'\u00A0 "Thanassoulis" ","
             " " "Allan" '\u00A0 "D." '\u00A0 "Sniderman" ","
             " & " "Michael" '\u00A0 "J." '\u00A0 "Pencina"
             ". ")]
