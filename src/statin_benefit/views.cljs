@@ -1,7 +1,8 @@
 (ns statin-benefit.views
-  (:require [re-frame.core :as re-frame]
-            [statin-benefit.events :as ev]
+  (:require
+            [re-frame.core :as re-frame]
             [statin-benefit.config :as config]
+            [statin-benefit.events :as ev]
             [statin-benefit.subs :as subs]
             [statin-benefit.translation :as translation :refer [t]]))
 
@@ -33,6 +34,17 @@
 ;;;;; Components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn checkbox
+  [k label]
+  [:label
+   [:input {:id        (name k)
+            :on-change #(re-frame/dispatch
+                         [(events-key k) (-> %
+                                             (unchecked-get "target")
+                                             (unchecked-get "checked"))])
+            :type      :checkbox}]
+   [:span.label-body label]])
+
 (defn yes-no-radio
   "Yes/no radio button."
   [k question]
@@ -42,6 +54,7 @@
       question]
      [:div {:id (name k) :class "row"}
       [:input {:type      :radio :name k :value 1
+               :default true
                :on-change (pass-off k)}]
       [:span " "]
       (t "Yes")
@@ -80,22 +93,24 @@
 ;;;;; Main View
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn statin-dosing []
-  [:div.row
-   [:div.columns.six
-    [select :intensity (t "Statin Treatment Intensity")
-     {:low (t "Low")
-      :moderate (t "Moderate")
-      :high (t "High")}]]])
+(defn statin-change-dosing []
+  [:div])
+
+(defn statin-new-dosing []
+  [:div
+   [:div.row
+    [:div.columns.six
+     [select :intensity (t "Statin Treatment Intensity")
+      {:low (t "Low")
+       :moderate (t "Moderate")
+       :high (t "High")}]]]
+   [:div.row
+    [checkbox :ezetimibe? (t "Plus Ezetimibe")]]])
 
 (defn cholesterol []
   [:div
-   #_[:div.row
-    [yes-no-radio :currently-treated? (t "Are you currently taking statins?")]]
-   #_[:div.vspacer]
-
    [:div.row
-    [:label {:for "cholesterol"} (t "Pretreatment Cholesterol") ":"]
+    [:label {:for "cholesterol"} (t "Cholesterol") ":"]
     [:div#cholesterol.row
      [:div.columns.three [number-box :total-c (t "Total")]]
      [:div.columns.three [number-box :ldl-c "LDL-C"]]
@@ -105,7 +120,14 @@
 
    [:div.vspacer]
 
-   [statin-dosing]])
+   [:div.row
+    [yes-no-radio :currently-on-statins? (t "Are you currently taking statins?")]]
+
+   [:div.vspacer]
+
+   (if @(re-frame/subscribe [::subs/currently-on-statins?])
+     [statin-change-dosing]
+     [statin-new-dosing])])
 
 (defn form []
   [:div
@@ -195,11 +217,11 @@
            [:th [:strong (t "30 Year ASCVD Risk")]]]]
          [:tbody
           [:tr
-           [:td [:strong (t "Without Statins")]]
+           [:td [:strong (t "Without Treatment")]]
            [:td (percent-sub ::subs/untreated-ten-year-risk)]
            [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
           [:tr
-           [:td [:strong (t "With Statins")]]
+           [:td [:strong (t "With Treatment")]]
            [:td (percent-sub ::subs/treated-ten-year-risk)]
            [:td (percent-sub ::subs/treated-thirty-year-risk)]]
           [:tr

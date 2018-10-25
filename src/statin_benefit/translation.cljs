@@ -25,6 +25,9 @@
    "Number to Treat to Prevent One Event"
    "Numéro à Traiter pour Éviter un Événement"
 
+   "Are you currently taking statins?"
+   "Êtes-vous actuellement traité avec des statines?"
+
    "Do you currently smoke?"    "Fumez-vous actuellement?"
    "Are you diabetic?"          "Êtes-vous diab‌étique?"
    "Statin Treatment Intensity" "Dosage de Statines"
@@ -40,7 +43,7 @@
    "Blood Pressure"             "Tension Artérielle"
    "Yes"                        "Oui"
    "No"                         "Non"
-   "Pretreatment Cholesterol"   "Cholestérol Avant Traitement"
+   "Cholesterol"                "Cholestérol"
    "Total"                      "Total"
    "Units"                      "Unités"
    "Select"                     "Choisir"
@@ -48,11 +51,11 @@
    "Moderate"                   "Moyen"
    "High"                       "Haute"
    "Results"                    "Résultats"
+   "Plus Ezetimibe"             "Avec Ezetimibe"
    "10 Year ASCVD Risk"         "Risque sur 10 Ans"
    "30 Year ASCVD Risk"         "Risque sur 30 Ans"
-   "With Statins"               "Avec Statines"
-   "Without Statins"            "Sans Statines"
-   "Benefit of Statin Therapy"  "Bénéfice de Statines"
+   "With Treatment"             "Avec Traitement"
+   "Without Treatment"          "Sans Traitement"
    "Risk Reduction Factor"      "Réduction du Risque Relatif"
    "The authors"                "Les auteurs"
    "Released under the"         "Distribué sous le"})
