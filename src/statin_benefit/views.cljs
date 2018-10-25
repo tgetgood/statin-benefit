@@ -48,21 +48,20 @@
 (defn yes-no-radio
   "Yes/no radio button."
   [k question]
-  [:div
+  [:div.row
      [:label {:for   (name k)
               :class (validation k)}
       question]
-     [:div {:id (name k) :class "row"}
-      [:input {:type      :radio :name k :value 1
-               :default true
-               :on-change (pass-off k)}]
-      [:span " "]
-      (t "Yes")
-      [:span.hspacer " "]
-      [:input {:type      :radio :name k :value 0
-               :on-change (pass-off k)}]
-      [:span " "]
-      (t "No")]])
+     [:div.u-full-width {:id (name k)}
+      [:label.columns.three
+       [:input {:type      :radio :name k :value 1
+                :default true
+                :on-change (pass-off k)}]
+       [:span.label-body " " (t "Yes")]]
+      [:label.columns.three
+       [:input {:type      :radio :name k :value 0
+                :on-change (pass-off k)}]
+       [:span.label-body " " (t "No")]]]])
 
 (defn number-box
   "Numerical input box."
@@ -121,7 +120,8 @@
    [:div.vspacer]
 
    [:div.row
-    [yes-no-radio :currently-on-statins? (t "Are you currently taking statins?")]]
+    [:div.columns.six
+     [yes-no-radio :currently-on-statins? (t "Are you currently taking statins?")]]]
 
    [:div.vspacer]
 

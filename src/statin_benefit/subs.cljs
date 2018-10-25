@@ -12,6 +12,11 @@
    (:lang db)))
 
 (re-frame/reg-sub
+ ::currently-on-statins?
+ (fn [db]
+   (:currently-on-statins? db)))
+
+(re-frame/reg-sub
  ::filled?
  (fn [db]
    (every? #(validation/valid? (get db %)) validation/required-keys)))
