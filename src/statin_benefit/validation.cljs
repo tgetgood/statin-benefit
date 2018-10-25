@@ -8,19 +8,20 @@
   (= "1" x))
 
 (def fields
-  {:age          int
-   :sex          keyword
-   :ethnicity    keyword
-   :bp-systolic  int
-   :bp-diastolic int
-   :hypertension bool
-   :total-c      int
-   :ldl-c        int
-   :hdl-c        int
-   :c-units      keyword
-   :smoker?      bool
-   :diabetic?    bool
-   :intensity    keyword})
+  {:age                int
+   :sex                keyword
+   :ethnicity          keyword
+   :bp-systolic        int
+   :bp-diastolic       int
+   :hypertension       bool
+   :total-c            int
+   :ldl-c              int
+   :hdl-c              int
+   :c-units            keyword
+   :smoker?            bool
+   :diabetic?          bool
+   ;; :currently-treated? bool
+   :intensity          keyword})
 
 (def required-keys
   (->> (dissoc fields :bp-diastolic)
