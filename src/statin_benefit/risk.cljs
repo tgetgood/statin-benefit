@@ -1,20 +1,6 @@
 (ns statin-benefit.risk
-  (:require re-frame.db))
-
-(defn ln [x]
-  (js/Math.log x))
-
-(defn exp
-  ([x]
-   (js/Math.exp x))
-  ([base power]
-   (js/Math.pow base power)))
-
-(def mmol->mg
-  38.66976)
-
-(def mg->mmol
-  0.02586)
+  (:require re-frame.db
+            [statin-benefit.math :refer [ln exp mmol->mg mg->mmol]]))
 
 (defn cholesterol-conversion [x units]
   (* x (if (= units :mg-dl) 1 mmol->mg)))
@@ -42,21 +28,26 @@
 (defn ln-age*ln-hdl-c [stats]
   (* (ln-age stats) (ln-hdl-c stats)))
 
-(defn ln-treated-bp [{:keys [hypertension bp-systolic]}]
-  (if hypertension
-    (ln bp-systolic)
-    0))
+(defn treated-bp? [{:keys [hypertension]}]
+  (if hypertension 1 0))
 
-(defn ln-untreated-bp [{:keys [hypertension bp-systolic]}]
-  (if-not hypertension
-    (ln bp-systolic)
-    0))
+(defn ln-bp [{:keys [bp-systolic]}]
+  (ln bp-systolic))
+
+(defn ln-treated-bp [stats]
+  (* (treated-bp? stats) (ln-bp stats)))
+
+(defn ln-untreated-bp [stats]
+  (* (- 1 (treated-bp?)) (ln-bp stats)))
 
 (defn ln-age*ln-treated-bp [stats]
   (* (ln-age stats) (ln-treated-bp stats)))
 
 (defn ln-age*ln-untreated-bp [stats]
   (* (ln-age stats) (ln-untreated-bp stats)))
+
+(defn male? [{:keys [sex]}]
+  (if (= sex :male) 1 0))
 
 (defn smoker? [{:keys [smoker?]}]
   (if smoker? 1 0))
@@ -128,7 +119,7 @@
 
 
 (defn individual-sum [parameters stats]
-  (reduce + (map (fn [[f c]] (* c (f stats))) parameters)))
+  (transduce (map (fn [[f c]] (* c (f stats)))) + parameters))
 
 (defn untreated-survival [stats]
   (let [{:keys [baseline-survival mean-score parameters]}
@@ -138,7 +129,7 @@
     (exp baseline-survival (exp (- score mean-score)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;; Statin Benefit
+;;;;; 10 Year Statin Benefit
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def intensity-table
