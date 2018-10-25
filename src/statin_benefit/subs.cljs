@@ -1,7 +1,7 @@
 (ns statin-benefit.subs
   (:require [re-frame.core :as re-frame]
-            [statin-benefit.risk :as risk]
-            [statin-benefit.risk30 :as risk30]
+            [statin-benefit.risk.ten :as risk]
+            [statin-benefit.risk.thirty :as risk30]
             [statin-benefit.validation :as validation]))
 
 ;;;;; Form

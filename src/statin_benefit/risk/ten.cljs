@@ -1,6 +1,6 @@
-(ns statin-benefit.risk
+(ns statin-benefit.risk.ten
   (:require [statin-benefit.math :refer [exp ln mg->mmol]]
-            [statin-benefit.risk-fns :as r]))
+            [statin-benefit.risk.common :as r]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Parameter table for Pooled Cohort Risk
@@ -73,14 +73,6 @@
 ;;;;; 10 Year Statin Benefit
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def intensity-table
-  {:low      0.2
-   :moderate 0.4
-   :high     0.6})
-
-(defn ldl-reduction [{:keys [ldl-c c-units intensity]}]
-  (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (get intensity-table intensity)))
-
 (defn hazard-ration [survival]
   (exp (- (* (ln (- 1 survival)) 0.12346) 0.10821)))
 
@@ -88,7 +80,7 @@
   (let [us (untreated-survival stats)]
     (exp us
          (exp (hazard-ration us)
-              (ldl-reduction stats)))))
+              (r/ldl-reduction stats)))))
 
 (defn test-benefit
   "To compare the calculation to the graphs in the paper."
@@ -96,7 +88,7 @@
   (let [untreated-survival (- 1 risk)]
     (- (exp untreated-survival
             (exp (hazard-ration untreated-survival)
-                 (ldl-reduction {:ldl-c ldl
-                                 :c-units :mg-dl
-                                 :intensity :moderate})))
+                 (r/ldl-reduction {:ldl-c   ldl
+                                   :c-units   :mg-dl
+                                   :intensity :moderate})))
        untreated-survival)))

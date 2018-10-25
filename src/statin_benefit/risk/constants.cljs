@@ -1,4 +1,4 @@
-(ns statin-benefit.risk30-constants
+(ns statin-benefit.risk.constants
   "These are the columns of constants from the spreadsheet HCVD_No_BMI."
   (:require [statin-benefit.math :refer [ln]]))
 

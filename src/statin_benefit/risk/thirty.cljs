@@ -1,10 +1,10 @@
-(ns statin-benefit.risk30
+(ns statin-benefit.risk.thirty
   "Names here refer to the column titles in the Framingham algo spreadsheet
   'cardio30yr_risk_lipids'. If I know what the numbers meant, I'd think up
   better names, but to be frank I may as well be copying gibberish."
   (:require [statin-benefit.math :refer [exp]]
-            [statin-benefit.risk-fns :as r]
-            [statin-benefit.risk30-constants :as constants]))
+            [statin-benefit.risk.common :as r]
+            [statin-benefit.risk.constants :as constants]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Risk

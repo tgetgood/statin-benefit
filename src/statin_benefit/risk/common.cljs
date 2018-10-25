@@ -1,5 +1,8 @@
-(ns statin-benefit.risk-fns
-  (:require [statin-benefit.math :refer [cholesterol-conversion ln]]))
+(ns statin-benefit.risk.common
+  (:require [statin-benefit.math :refer [ln mg->mmol mmol->mg]]))
+
+(defn cholesterol-conversion [x units]
+  (* x (if (= units :mg-dl) 1 mmol->mg)))
 
 ;;;;; Parameter fns
 
@@ -56,3 +59,12 @@
 
 (defn individual-sum [parameters stats]
   (transduce (map (fn [[f c]] (* c (f stats)))) + parameters))
+
+(def intensity-table
+  {:none     0
+   :low      0.2
+   :moderate 0.4
+   :high     0.6})
+
+(defn ldl-reduction [{:keys [ldl-c c-units intensity]}]
+  (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (get intensity-table intensity)))
