@@ -22,6 +22,9 @@
    "Fill in the form to see your results."
    "Complétez le formulaire pour voir vos résultats."
 
+   "Number to Treat to Prevent One Event"
+   "Numéro à Traiter pour Éviter un Événement"
+
    "Do you currently smoke?"    "Fumez-vous actuellement?"
    "Are you diabetic?"          "Êtes-vous diab‌étique?"
    "Statin Treatment Intensity" "Dosage de Statines"

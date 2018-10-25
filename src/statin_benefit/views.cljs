@@ -203,7 +203,7 @@
            [:td (percent-sub ::subs/treated-ten-year-risk)]
            [:td (percent-sub ::subs/treated-thirty-year-risk)]]
           [:tr
-           [:td [:strong (t "Number to Treat to Prevent 1 Event")]]
+           [:td [:strong (t "Number to Treat to Prevent One Event")]]
            [:td (num-sub ::subs/number-to-treat-ten-years)]
            [:td (num-sub ::subs/number-to-treat-thirty-years)]]
           [:tr
