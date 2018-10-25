@@ -1,48 +1,15 @@
 (ns statin-benefit.subs
   (:require [re-frame.core :as re-frame]
             [statin-benefit.risk :as risk]
+            [statin-benefit.risk30 :as risk30]
             [statin-benefit.validation :as validation]))
+
+;;;;; Form
 
 (re-frame/reg-sub
  ::lang
  (fn [db]
    (:lang db)))
-
-(re-frame/reg-sub
- ::untreated-survival
- (fn [db]
-   (risk/untreated-survival db)))
-
-(re-frame/reg-sub
- ::untreated-risk
- :<- [::untreated-survival]
- (fn [v _]
-   (- 1 v)))
-
-(re-frame/reg-sub
- ::treated-survival
- (fn [db]
-   (risk/treated-survival db)))
-
-(re-frame/reg-sub
- ::treated-risk
- :<- [::treated-survival]
- (fn [v _]
-   (- 1 v)))
-
-(re-frame/reg-sub
- ::number-to-treat
- :<- [::treated-risk]
- :<- [::untreated-risk]
- (fn [[treated untreated] _]
-   (/ 1 (- untreated treated))))
-
-(re-frame/reg-sub
- ::risk-reduction-percentage
- :<- [::untreated-risk]
- :<- [::risk-reduction]
- (fn [[untreated reduction] _]
-   (/ reduction untreated)))
 
 (re-frame/reg-sub
  ::filled?
@@ -57,3 +24,55 @@
        " incomplete"
        (when-not (validation/valid? v)
          " invalid")))))
+
+;;;;; 10 year risk
+
+(re-frame/reg-sub
+ ::untreated-ten-year-risk
+ (fn [db]
+   (- 1 (risk/untreated-survival db))))
+
+(re-frame/reg-sub
+ ::treated-ten-year-risk
+ (fn [db]
+   (- 1 (risk/treated-survival db))))
+
+(re-frame/reg-sub
+ ::number-to-treat-ten-years
+ :<- [::treated-ten-year-risk]
+ :<- [::untreated-ten-year-risk]
+ (fn [[treated untreated] _]
+   (/ 1 (- untreated treated))))
+
+(re-frame/reg-sub
+ ::ten-year-risk-reduction-percentage
+ :<- [::untreated-ten-year-risk]
+ :<- [::treated-ten-year-risk]
+ (fn [[untreated treated] _]
+   (/ (- untreated treated) untreated)))
+
+;;;;; 30 year risk
+
+(re-frame/reg-sub
+ ::untreated-thirty-year-risk
+ (fn [db]
+   (risk30/untreated-risk db)))
+
+(re-frame/reg-sub
+ ::treated-thirty-year-risk
+ (fn [db]
+   0))
+
+(re-frame/reg-sub
+ ::number-to-treat-thirty-years
+ :<- [::treated-thirty-year-risk]
+ :<- [::untreated-thirty-year-risk]
+ (fn [[treated untreated] _]
+   (/ 1 (- untreated treated))))
+
+(re-frame/reg-sub
+ ::thirty-year-risk-reduction-percentage
+ :<- [::untreated-thirty-year-risk]
+ :<- [::treated-thirty-year-risk]
+ (fn [[untreated treated] _]
+   (/ (- untreated treated) untreated)))

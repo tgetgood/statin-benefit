@@ -10,7 +10,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn percentage [x]
-  [:span (str (.toFixed (* 100 x) 2) "%")])
+  [:span (str (.toFixed (* 100 x) 1) "%")])
 
 (defn events-key [k]
   (keyword :statin-benefit.events (name k)))
@@ -27,7 +27,7 @@
    @(re-frame/subscribe [k])))
 
 (defn num-sub [k]
-  [:span (str (.toFixed @(re-frame/subscribe [k]) 0))])
+  [:span (str (.toFixed @(re-frame/subscribe [k]) 1))])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Components
@@ -196,21 +196,20 @@
          [:tbody
           [:tr
            [:td [:strong (t "Without Statins")]]
-           [:td (percent-sub ::subs/untreated-risk)]
-           [:td "?"]]
+           [:td (percent-sub ::subs/untreated-ten-year-risk)]
+           [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
           [:tr
            [:td [:strong (t "With Statins")]]
-           [:td (percent-sub ::subs/treated-risk)]
-           [:td "?"]]
+           [:td (percent-sub ::subs/treated-ten-year-risk)]
+           [:td (percent-sub ::subs/treated-thirty-year-risk)]]
           [:tr
            [:td [:strong (t "Number to Treat to Prevent 1 Event")]]
-           [:td (num-sub ::subs/number-to-treat)]
-
-           [:td "?"]]
+           [:td (num-sub ::subs/number-to-treat-ten-years)]
+           [:td (num-sub ::subs/number-to-treat-thirty-years)]]
           [:tr
            [:td [:strong (t "Risk Reduction Factor")]]
-           [:td (percent-sub ::subs/risk-reduction-percentage)]
-           [:td "?"]]]]]]
+           [:td (percent-sub ::subs/ten-year-risk-reduction-percentage)]
+           [:td (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]]]]]
       [:div (t "Fill in the form to see your results.")])]])
 
 (defn language-switch []

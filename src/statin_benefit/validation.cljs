@@ -20,7 +20,7 @@
    :c-units            keyword
    :smoker?            bool
    :diabetic?          bool
-   :currently-treated? bool
+   ;; :currently-treated? bool
    :intensity          keyword})
 
 (def required-keys
