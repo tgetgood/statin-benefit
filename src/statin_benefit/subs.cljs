@@ -60,8 +60,10 @@
 
 (re-frame/reg-sub
  ::treated-thirty-year-risk
- (fn [db]
-   0))
+ :<- [::untreated-thirty-year-risk]
+ :<- [::thirty-year-risk-reduction-percentage]
+ (fn [[risk rrf] _]
+   (* risk (- 1 rrf))))
 
 (re-frame/reg-sub
  ::number-to-treat-thirty-years
@@ -72,7 +74,5 @@
 
 (re-frame/reg-sub
  ::thirty-year-risk-reduction-percentage
- :<- [::untreated-thirty-year-risk]
- :<- [::treated-thirty-year-risk]
- (fn [[untreated treated] _]
-   (/ (- untreated treated) untreated)))
+ (fn [db]
+   (risk30/risk-reduction-factor db)))
