@@ -14,3 +14,6 @@
 
 (def mg->mmol
   0.02586)
+
+(defn cholesterol-conversion [x units]
+  (* x (if (= units :mg-dl) 1 mmol->mg)))

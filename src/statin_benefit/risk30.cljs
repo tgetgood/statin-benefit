@@ -3,8 +3,12 @@
   'cardio30yr_risk_lipids'. If I know what the numbers meant, I'd think up
   better names, but to be frank I may as well be copying gibberish."
   (:require [statin-benefit.math :refer [exp]]
-            [statin-benefit.risk :as r]
+            [statin-benefit.risk-fns :as r]
             [statin-benefit.risk30-constants :as constants]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Risk
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def xbeta
   {:mean 24.728399807068
@@ -42,3 +46,7 @@
                    constants/E
                    constants/J
                    constants/G))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Benefit
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
