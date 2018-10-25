@@ -48,11 +48,11 @@
 (defn yes-no-radio
   "Yes/no radio button."
   [k question]
-  [:div.row
+  [:div
      [:label {:for   (name k)
               :class (validation k)}
       question]
-     [:div.u-full-width {:id (name k)}
+     [:div.row {:id (name k)}
       [:label.columns.three
        [:input {:type      :radio :name k :value 1
                 :default true
@@ -153,17 +153,14 @@
               :class (validation :sex)}
       (t "Sex")]
      [:div#sex.row.u-full-width
-      [:span
+      [:label.columns.four
        [:input {:type      :radio :name :sex :value :male
                 :on-change (pass-off :sex)}]
-       [:span " "]
-       (t "Male")]
-      [:span.hspacer " "]
-      [:span
+       [:span.label-body (t "Male")]]
+      [:label.columns.six
        [:input {:type       :radio :name :sex :value :female
                 :on-change (pass-off :sex)}]
-       [:span " "]
-       (t "Female")]]]]
+       [:span.label-body (t "Female")]]]]]
 
    [:div.vspacer]
 
