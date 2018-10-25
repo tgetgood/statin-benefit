@@ -99,12 +99,12 @@
   [:div
    [:div.row
     [:div.columns.six
-     [select :intensity (t "Statin Treatment Intensity")
+     [select :target-intensity (t "Statin Treatment Intensity")
       {:low (t "Low")
        :moderate (t "Moderate")
        :high (t "High")}]]]
    [:div.row
-    [checkbox :ezetimibe? (t "Plus Ezetimibe")]]])
+    [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]])
 
 (defn cholesterol []
   [:div
@@ -158,7 +158,7 @@
                 :on-change (pass-off :sex)}]
        [:span.label-body (t "Male")]]
       [:label.columns.six
-       [:input {:type       :radio :name :sex :value :female
+       [:input {:type      :radio :name :sex :value :female
                 :on-change (pass-off :sex)}]
        [:span.label-body (t "Female")]]]]]
 
@@ -234,7 +234,7 @@
 (defn language-switch []
   (if-let [lang (translation/current)]
     (let [[text switch-to] (translation/switcher lang)]
-      [:a {:on-click #(re-frame/dispatch [::ev/change-language switch-to])}
+      [:a {:on-click #(re-frame/dispatch [::ev/lang switch-to])}
        text])
     (let [[text switch-to] (translation/switcher config/startup-lang)]
       [:a {:href (if (= switch-to :en)

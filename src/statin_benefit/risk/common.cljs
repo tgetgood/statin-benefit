@@ -65,9 +65,9 @@
    :moderate 0.4
    :high     0.6})
 
-(defn intensity [{:keys [intensity ezetimibe?]}]
-  (let [base (get intensity-table intensity)]
-   (if ezetimibe?
+(defn intensity [{:keys [target-intensity target-ezetimibe?]}]
+  (let [base (get intensity-table target-intensity)]
+   (if target-ezetimibe?
      (+ base 0.1)
      base)))
 
