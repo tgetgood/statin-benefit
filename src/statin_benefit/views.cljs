@@ -88,18 +88,22 @@
                                  (when placeholder
                                    {:placeholder placeholder}))]]))
 
+(defn add-default [options]
+  (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
+        options))
+
 (defn select
   "Standard HTML select"
   [k label opts]
-  (let [options
-        (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
-              (map (fn [[k v]] [:option {:value k} v]) opts))
+  (let [options (add-default (map (fn [[k v]] [:option {:value k} v]) opts))
         current (grab k)]
     [:div
      [:label {:for (name k)} label]
      (into [:select {:id (name k)
                      :on-change   (pass-off k)
-                     :default-value (or current :none)}]
+                     :default-value (if (contains? opts current)
+                                      current
+                                      :none)}]
            options)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -125,17 +129,18 @@
    [:div.columns.four
     [:div
      [select :current-intensity (t "Current Statin Dosage")
-      {:low (t "Low")
+      {:low      (t "Low")
        :moderate (t "Moderate")
-       :high (t "High")}]]
+       :high     (t "High")}]]
     [:div.row
      [checkbox :current-ezetimibe? (t "Plus Ezetimibe")]]]
    [:div.columns.four
     [:div
      [select :target-intensity (t "New Statin Dosage")
-      {:low (t "Low")
+      {:zero     (t "None")
+       :low      (t "Low")
        :moderate (t "Moderate")
-       :high (t "High")}]]
+       :high     (t "High")}]]
     [:div.row
      [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]]])
 

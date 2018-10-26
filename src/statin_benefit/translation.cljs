@@ -49,6 +49,7 @@
    "Total"                   "Total"
    "Units"                   "Unités"
    "Select"                  "Choisir"
+   "None"                    "Zéro"
    "Low"                     "Faible"
    "Moderate"                "Moyen"
    "High"                    "Haute"
