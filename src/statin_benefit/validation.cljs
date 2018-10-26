@@ -47,3 +47,10 @@
 (defn valid? [x]
   (and (not (nil? x))
        (or (not (number? x)) (not (js/isNaN x)))))
+
+(defn form-valid? [form]
+  (and
+   (every? #(valid? (get form %)) required-keys)
+   (if (:currently-on-statins? form)
+     (valid? (:current-intensity form))
+     true)))

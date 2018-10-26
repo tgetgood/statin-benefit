@@ -16,6 +16,12 @@
 (defn events-key [k]
   (keyword :statin-benefit.events (name k)))
 
+(defn subs-key [k]
+  (keyword :statin-benefit.subs (name k)))
+
+(defn grab [k]
+  @(re-frame/subscribe [(subs-key k)]))
+
 (defn pass-off [k]
   (fn [ev]
     (re-frame/dispatch [(events-key k) (-> ev .-target .-value)])))
@@ -36,75 +42,102 @@
 
 (defn checkbox
   [k label]
-  [:label
-   [:input {:id        (name k)
-            :on-change #(re-frame/dispatch
-                         [(events-key k) (-> %
-                                             (unchecked-get "target")
-                                             (unchecked-get "checked"))])
-            :type      :checkbox}]
-   [:span.label-body label]])
+  (let [current (grab k)]
+    [:label
+     [:input {:id        (name k)
+              :on-change #(re-frame/dispatch
+                           [(events-key k) (-> %
+                                               (unchecked-get "target")
+                                               (unchecked-get "checked"))])
+              :checked   (true? current)
+              :type      :checkbox}]
+     [:span.label-body label]]))
 
 (defn yes-no-radio
   "Yes/no radio button."
   [k question]
-  [:div
+  (let [current (grab k)]
+    [:div
      [:label {:for   (name k)
               :class (validation k)}
       question]
      [:div.row {:id (name k)}
       [:label.columns.three
        [:input {:type      :radio :name k :value 1
-                :default true
+                :checked   (true? current)
                 :on-change (pass-off k)}]
        [:span.label-body " " (t "Yes")]]
       [:label.columns.three
        [:input {:type      :radio :name k :value 0
+                :checked   (false? current)
                 :on-change (pass-off k)}]
-       [:span.label-body " " (t "No")]]]])
+       [:span.label-body " " (t "No")]]]]))
 
 (defn number-box
   "Numerical input box."
-  [k label]
-  [:div
-   [:label {:for (name k)} label]
-   [:input.u-full-width {:id        (name k)
-            :type      :number :min 0
-            :class     (validation k)
-            :on-change (pass-off k)}]])
+  [k label & [{:keys [placeholder class]}]]
+  (let [current (grab k)]
+    [:span
+     (when label [:label {:for (name k)} label])
+     [:input.u-full-width (merge {:id (name k)
+                                  :type            :number :min 0
+                                  :class           (str (validation k) " " class)
+                                  :on-change       (pass-off k)}
+                                 (when current
+                                   {:default-value current})
+                                 (when placeholder
+                                   {:placeholder placeholder}))]]))
 
 (defn select
   "Standard HTML select"
-  [k label opts & [default]]
-  (let [options (map (fn [[k v]] [:option {:value k} v]) opts)]
+  [k label opts]
+  (let [options
+        (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
+              (map (fn [[k v]] [:option {:value k} v]) opts))
+        current (grab k)]
     [:div
      [:label {:for (name k)} label]
      (into [:select {:id (name k)
                      :on-change   (pass-off k)
-                     :default-value (or default :none)}]
-           (if default
-             options
-             (cons
-              [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
-              options)))]))
+                     :default-value (or current :none)}]
+           options)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Main View
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn statin-change-dosing []
-  [:div])
-
 (defn statin-new-dosing []
-  [:div
-   [:div.row
-    [:div.columns.six
-     [select :target-intensity (t "Statin Treatment Intensity")
+  (let [target (re-frame/subscribe [::subs/target-intensity])]
+    (fn []
+      [:div
+       [:div.row
+        [:div.columns.six
+         [select :target-intensity (t "Statin Dosage")
+          {:low (t "Low")
+           :moderate (t "Moderate")
+           :high (t "High")}
+          (when @target @target)]]]
+       [:div.row
+        [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]])))
+
+(defn statin-change-dosing []
+  [:div.row
+   [:div.columns.four
+    [:div
+     [select :current-intensity (t "Current Statin Dosage")
       {:low (t "Low")
        :moderate (t "Moderate")
-       :high (t "High")}]]]
-   [:div.row
-    [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]])
+       :high (t "High")}]]
+    [:div.row
+     [checkbox :current-ezetimibe? (t "Plus Ezetimibe")]]]
+   [:div.columns.four
+    [:div
+     [select :target-intensity (t "New Statin Dosage")
+      {:low (t "Low")
+       :moderate (t "Moderate")
+       :high (t "High")}]]
+    [:div.row
+     [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]]])
 
 (defn cholesterol []
   [:div
@@ -133,15 +166,7 @@
   [:div
    [:div.row
     [:div.columns.three
-     [:label {:for "age"} (t "Age")]
-     [:input#age.u-full-width
-      {:type        :number
-       :min         1
-       :step        1
-       :max         120
-       :class       (validation :age)
-       :placeholder 50
-       :on-change   (pass-off :age)}]]
+     [number-box :age (t "Age") {:placeholder 50}]]
 
     [:div.columns.four
      [select :ethnicity  (t "Ethnicity")
@@ -168,20 +193,11 @@
     [:div.columns.five
      [:label {:for "bp"} (t "Blood Pressure")]
      [:div#bp
-      [:span
-       [:input#bp-systolic.bp-input
-        {:type        :number
-         :min         0
-         :class       (validation :bp-systolic)
-         :placeholder 120
-         :on-change   (pass-off :bp-systolic)}]]
+      [number-box :bp-systolic nil {:placeholder 120
+                                    :class "bp-input"}]
       [:span.slash " / "]
-      [:span
-       [:input#bp-diastolic.bp-input
-        {:type        :number
-         :min         0
-         :placeholder 80
-         :on-change   (pass-off :bp-diastolic)}]]]]
+      [number-box :bp-diastolic nil {:placeholder 80
+                                     :class "bp-input"}]]]
 
     [:div.columns.seven
      [yes-no-radio :hypertension

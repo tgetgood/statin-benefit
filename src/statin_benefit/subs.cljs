@@ -6,20 +6,17 @@
 
 ;;;;; Form
 
-(re-frame/reg-sub
- ::lang
- (fn [db]
-   (:lang db)))
-
-(re-frame/reg-sub
- ::currently-on-statins?
- (fn [db]
-   (:currently-on-statins? db)))
+(run! (fn [ev]
+        (re-frame/reg-sub
+         (keyword (namespace ::x) ev)
+         (fn [db]
+           (get db ev))))
+      (keys validation/fields))
 
 (re-frame/reg-sub
  ::filled?
  (fn [db]
-   (every? #(validation/valid? (get db %)) validation/required-keys)))
+   (validation/form-valid? db)))
 
 (re-frame/reg-sub
  ::validation
