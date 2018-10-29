@@ -61,15 +61,22 @@
   (transduce (map (fn [[f c]] (* c (f stats)))) + parameters))
 
 (def intensity-table
-  {:low      0.2
+  {:zero     0
+   :low      0.2
    :moderate 0.4
    :high     0.6})
 
-(defn intensity [{:keys [target-intensity target-ezetimibe?]}]
-  (let [base (get intensity-table target-intensity)]
-   (if target-ezetimibe?
+(defn intensity [stats current?]
+  (let [intensity (if current?
+                    (:current-intensity stats)
+                    (:target-intensity stats))
+        ezetimibe? (if current?
+                     (:current-ezetimibe? stats)
+                     (:target-ezetimibe? stats))
+        base (get intensity-table intensity)]
+   (if ezetimibe?
      (+ base 0.1)
      base)))
 
-(defn ldl-reduction [{:keys [ldl-c c-units] :as stats}]
-  (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (intensity stats)))
+(defn ldl-reduction [{:keys [ldl-c c-units] :as stats} & [current?]]
+  (* ldl-c (if (= c-units :mmol-l) 1 mg->mmol) (intensity stats current?)))

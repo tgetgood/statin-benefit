@@ -33,8 +33,11 @@
   (percentage
    @(re-frame/subscribe [k])))
 
+(defn num-span [num]
+  [:span (str (.toFixed num 1))])
+
 (defn num-sub [k]
-  [:span (str (.toFixed @(re-frame/subscribe [k]) 1))])
+  (num-span  @(re-frame/subscribe [k])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Components
@@ -114,7 +117,7 @@
   [:div
    [:div.row
     [:div.columns.six
-     [select :target-intensity (t "Statin Dosage")
+     [select :target-intensity (t "Prospective Statin Dosage")
       {:low (t "Low")
        :moderate (t "Moderate")
        :high (t "High")}]]]
@@ -124,20 +127,18 @@
 (defn statin-change-dosing []
   [:div.row
    [:div.columns.four
-    [:div
-     [select :current-intensity (t "Current Statin Dosage")
-      {:low      (t "Low")
-       :moderate (t "Moderate")
-       :high     (t "High")}]]
+    [select :current-intensity (t "Current Statin Dosage")
+     {:low      (t "Low")
+      :moderate (t "Moderate")
+      :high     (t "High")}]
     [:div.row
      [checkbox :current-ezetimibe? (t "Plus Ezetimibe")]]]
    [:div.columns.four
-    [:div
-     [select :target-intensity (t "New Statin Dosage")
-      {:zero     (t "None")
-       :low      (t "Low")
-       :moderate (t "Moderate")
-       :high     (t "High")}]]
+    [select :target-intensity (t "Prospective Statin Dosage")
+     {:zero     (t "None")
+      :low      (t "Low")
+      :moderate (t "Moderate")
+      :high     (t "High")}]
     [:div.row
      [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]]])
 
@@ -230,23 +231,47 @@
            [:th ""]
            [:th [:strong (t "10 Year ASCVD Risk")]]
            [:th [:strong (t "30 Year ASCVD Risk")]]]]
-         [:tbody
-          [:tr
-           [:td [:strong (t "Without Treatment")]]
-           [:td (percent-sub ::subs/untreated-ten-year-risk)]
-           [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
-          [:tr
-           [:td [:strong (t "With Treatment")]]
-           [:td (percent-sub ::subs/treated-ten-year-risk)]
-           [:td (percent-sub ::subs/treated-thirty-year-risk)]]
-          [:tr
-           [:td [:strong (t "Number to Treat to Prevent One Event")]]
-           [:td (num-sub ::subs/number-to-treat-ten-years)]
-           [:td (num-sub ::subs/number-to-treat-thirty-years)]]
-          [:tr
-           [:td [:strong (t "Risk Reduction Factor")]]
-           [:td (percent-sub ::subs/ten-year-risk-reduction-percentage)]
-           [:td (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]]]]]
+         (if (grab :currently-on-statins?)
+           (let [ntt10 (grab :rel-num-to-treat-ten)
+                 ntt30 (grab :rel-num-to-treat-thirty)
+                 rrf10 (grab :rel-risk-reduction-ten)
+                 rrf30 (grab :rel-risk-reduction-thirty)]
+             [:tbody
+              [:tr
+               [:td [:strong (t "Current Treatment")]]
+               [:td (percent-sub ::subs/current-ten-year-risk)]
+               [:td (percent-sub ::subs/current-thirty-year-risk)]]
+              [:tr
+               [:td [:strong (t "Prospective Treatment")]]
+               [:td (percent-sub ::subs/treated-ten-year-risk)]
+               [:td (percent-sub ::subs/treated-thirty-year-risk)]]
+              (when (every? pos? [ntt10 ntt30])
+                [:tr
+                 [:td [:strong (t "Number to Treat to Prevent One Event")]]
+                 [:td (num-span ntt10)]
+                 [:td (num-span ntt30)]])
+              (when (every? pos? [rrf10 rrf30])
+                [:tr
+                 [:td [:strong (t "Risk Reduction Factor")]]
+                 [:td (percentage rrf10)]
+                 [:td (percentage rrf30)]])])
+           [:tbody
+            [:tr
+             [:td [:strong (t "Without Treatment")]]
+             [:td (percent-sub ::subs/untreated-ten-year-risk)]
+             [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
+            [:tr
+             [:td [:strong (t "With Treatment")]]
+             [:td (percent-sub ::subs/treated-ten-year-risk)]
+             [:td (percent-sub ::subs/treated-thirty-year-risk)]]
+            [:tr
+             [:td [:strong (t "Number to Treat to Prevent One Event")]]
+             [:td (num-sub ::subs/number-to-treat-ten-years)]
+             [:td (num-sub ::subs/number-to-treat-thirty-years)]]
+            [:tr
+             [:td [:strong (t "Risk Reduction Factor")]]
+             [:td (percent-sub ::subs/ten-year-risk-reduction-percentage)]
+             [:td (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]])]]]
       [:div (t "Fill in the form to see your results.")])]])
 
 (defn language-switch []

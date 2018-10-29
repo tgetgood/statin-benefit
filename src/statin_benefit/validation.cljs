@@ -52,4 +52,4 @@
    (every? #(valid? (get form %)) required-keys)
    (if (:currently-on-statins? form)
      (valid? (:current-intensity form))
-     true)))
+     (not= :zero (:target-intensity form)))))
