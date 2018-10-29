@@ -111,18 +111,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn statin-new-dosing []
-  (let [target (re-frame/subscribe [::subs/target-intensity])]
-    (fn []
-      [:div
-       [:div.row
-        [:div.columns.six
-         [select :target-intensity (t "Statin Dosage")
-          {:low (t "Low")
-           :moderate (t "Moderate")
-           :high (t "High")}
-          (when @target @target)]]]
-       [:div.row
-        [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]])))
+  [:div
+   [:div.row
+    [:div.columns.six
+     [select :target-intensity (t "Statin Dosage")
+      {:low (t "Low")
+       :moderate (t "Moderate")
+       :high (t "High")}]]]
+   [:div.row
+    [checkbox :target-ezetimibe? (t "Plus Ezetimibe")]]])
 
 (defn statin-change-dosing []
   [:div.row
@@ -283,7 +280,7 @@
      (t "Source Code")]]])
 
 (defn title-bar []
-  [:div
+ [:div
    [:h3 (t "MUHC-Duke Statin Benefit Calculator")]
    [:div.u-pull-right [language-switch]]])
 
