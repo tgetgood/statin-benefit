@@ -13,8 +13,8 @@
             [statin-benefit.validation :as validation]
             [statin-benefit.views :as views]))
 
-(defn grab-int [id]
-  (validation/int
+(defn grab-num [id]
+  (validation/number
    (obj/get (js/document.getElementById id) "value")))
 
 (defn grab-radio [n]
@@ -33,9 +33,9 @@
       (keyword v))))
 
 (def grabbers
-  {validation/bool grab-bool
-   validation/int  grab-int
-   keyword         grab-select})
+  {validation/bool   grab-bool
+   validation/number grab-num
+   keyword           grab-select})
 
 (defn grab-values-from-dom
   "Returns the values of all inputs in the dom. Only useful is the js is very

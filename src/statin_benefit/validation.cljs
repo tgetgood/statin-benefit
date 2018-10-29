@@ -1,8 +1,7 @@
-(ns statin-benefit.validation
-  (:refer-clojure :exclude [int]))
+(ns statin-benefit.validation)
 
-(defn int [x]
-  (js/parseInt x))
+(defn number [x]
+  (js/parseFloat x))
 
 (defn bool [x]
   (= "1" x))
@@ -11,15 +10,15 @@
   x)
 
 (def fields
-  {:age                   int
+  {:age                   number
    :sex                   keyword
    :ethnicity             keyword
-   :bp-systolic           int
-   :bp-diastolic          int
+   :bp-systolic           number
+   :bp-diastolic          number
    :hypertension          bool
-   :total-c               int
-   :ldl-c                 int
-   :hdl-c                 int
+   :total-c               number
+   :ldl-c                 number
+   :hdl-c                 number
    :c-units               keyword
    :smoker?               bool
    :diabetic?             bool
