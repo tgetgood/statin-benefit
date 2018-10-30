@@ -102,11 +102,12 @@
         current (grab k)]
     [:div
      [:label {:for (name k)} label]
-     (into [:select {:id (name k)
-                     :on-change   (pass-off k)
-                     :default-value (if (contains? opts current)
-                                      current
-                                      :none)}]
+     (into [:select.u-full-width
+            {:id            (name k)
+             :on-change     (pass-off k)
+             :default-value (if (contains? opts current)
+                              current
+                              :none)}]
            options)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,14 +127,14 @@
 
 (defn statin-change-dosing []
   [:div.row
-   [:div.columns.four
+   [:div.columns.six
     [select :current-intensity (t "Current Statin Dosage")
      {:low      (t "Low")
       :moderate (t "Moderate")
       :high     (t "High")}]
     [:div.row
      [checkbox :current-ezetimibe? (t "Plus Ezetimibe")]]]
-   [:div.columns.four
+   [:div.columns.six
     [select :target-intensity (t "Prospective Statin Dosage")
      {:zero     (t "None")
       :low      (t "Low")
