@@ -51,5 +51,5 @@
 ;;;;; Benefit
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn risk-reduction-factor [stats]
-  (- 1 (exp (* (r/ldl-reduction stats) (+ -0.249 (* -0.0152 25))))))
+(defn risk-reduction-factor [stats ldl-reduction]
+  (- 1 (exp (* ldl-reduction (+ -0.249 (* -0.0152 25))))))

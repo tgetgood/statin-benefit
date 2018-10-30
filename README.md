@@ -21,6 +21,8 @@ calculated in [the paper][1].
 
 [Individualized Statin Benefit for Determining Statin Eligibility in the Primary Prevention of Cardiovascular Disease](https://www.ahajournals.org/doi/abs/10.1161/circulationaha.115.018383)
 
+Thanassoulis G, Sniderman AD, Pencina MJ. A Long-term Benefit Approach for Statin Eligibility in Primary Prevention. JAMA Cardiol. 2018;3(11) *link needed*.
+
 ## License
 
 Copyright © 2018 George Thanassoulis, Allan D. Sniderman, and Michael J. Pencina

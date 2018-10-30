@@ -76,19 +76,8 @@
 (defn hazard-ration [survival]
   (exp (- (* (ln (- 1 survival)) 0.12346) 0.10821)))
 
-(defn treated-survival [stats]
+(defn treated-survival [stats ldl-reduction]
   (let [us (untreated-survival stats)]
     (exp us
          (exp (hazard-ration us)
-              (r/ldl-reduction stats)))))
-
-(defn test-benefit
-  "To compare the calculation to the graphs in the paper."
-  [risk ldl]
-  (let [untreated-survival (- 1 risk)]
-    (- (exp untreated-survival
-            (exp (hazard-ration untreated-survival)
-                 (r/ldl-reduction {:ldl-c   ldl
-                                   :c-units   :mg-dl
-                                   :intensity :moderate})))
-       untreated-survival)))
+              ldl-reduction))))

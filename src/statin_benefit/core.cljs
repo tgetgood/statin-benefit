@@ -14,7 +14,7 @@
   {:c-units :mmol-l
    :lang    :en})
 
-(defn init []
+(defn ^:export init []
   (enable-console-print!)
   (re-frame/dispatch-sync [::events/initialize-db dev-default-db])
   (mount-root))

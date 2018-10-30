@@ -1,20 +1,23 @@
 (ns statin-benefit.subs
   (:require [re-frame.core :as re-frame]
+            [statin-benefit.risk.common :as rc]
             [statin-benefit.risk.ten :as risk]
             [statin-benefit.risk.thirty :as risk30]
             [statin-benefit.validation :as validation]))
 
 ;;;;; Form
 
-(re-frame/reg-sub
- ::lang
- (fn [db]
-   (:lang db)))
+(run! (fn [ev]
+        (re-frame/reg-sub
+         (keyword (namespace ::x) ev)
+         (fn [db]
+           (get db ev))))
+      (keys validation/fields))
 
 (re-frame/reg-sub
  ::filled?
  (fn [db]
-   (every? #(validation/valid? (get db %)) validation/required-keys)))
+   (validation/form-valid? db)))
 
 (re-frame/reg-sub
  ::validation
@@ -35,7 +38,7 @@
 (re-frame/reg-sub
  ::treated-ten-year-risk
  (fn [db]
-   (- 1 (risk/treated-survival db))))
+   (- 1 (risk/treated-survival db (rc/ldl-reduction db)))))
 
 (re-frame/reg-sub
  ::number-to-treat-ten-years
@@ -75,4 +78,49 @@
 (re-frame/reg-sub
  ::thirty-year-risk-reduction-percentage
  (fn [db]
-   (risk30/risk-reduction-factor db)))
+   (risk30/risk-reduction-factor db (rc/ldl-reduction db))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Relative dosages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(re-frame/reg-sub
+ ::current-ten-year-risk
+ (fn [db]
+   (- 1 (risk/treated-survival db (rc/ldl-reduction db true)))))
+
+(re-frame/reg-sub
+ ::current-thirty-year-risk
+ (fn [db]
+   (* (risk30/untreated-risk db)
+      (- 1 (risk30/risk-reduction-factor db (rc/ldl-reduction db true))))))
+
+(re-frame/reg-sub
+ ::rel-num-to-treat-ten
+ :<- [::treated-ten-year-risk]
+ :<- [::current-ten-year-risk]
+ (fn [[treated current] _]
+   (when-not (= current treated)
+     (/ 1 (- current treated)))))
+
+(re-frame/reg-sub
+ ::rel-num-to-treat-thirty
+ :<- [::treated-thirty-year-risk]
+ :<- [::current-thirty-year-risk]
+ (fn [[target current] _]
+   (when-not (= current target)
+     (/ 1 (- current target)))))
+
+(re-frame/reg-sub
+ ::rel-risk-reduction-ten
+  :<- [::current-ten-year-risk]
+  :<- [::treated-ten-year-risk]
+ (fn [[current treated] _]
+   (/ (- current treated) current)))
+
+(re-frame/reg-sub
+ ::rel-risk-reduction-thirty
+  :<- [::current-thirty-year-risk]
+  :<- [::treated-thirty-year-risk]
+ (fn [[current treated] _]
+   (/ (- current treated) current)))
