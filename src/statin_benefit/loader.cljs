@@ -13,6 +13,11 @@
             [statin-benefit.validation :as validation]
             [statin-benefit.views :as views]))
 
+(defn grab-check [id]
+  (-> id
+      js/document.getElementById
+      (obj/get "checked")))
+
 (defn grab-num [id]
   (validation/number
    (obj/get (js/document.getElementById id) "value")))
@@ -35,7 +40,8 @@
 (def grabbers
   {validation/bool   grab-bool
    validation/number grab-num
-   keyword           grab-select})
+   keyword           grab-select
+   validation/check  grab-check})
 
 (defn grab-values-from-dom
   "Returns the values of all inputs in the dom. Only useful is the js is very
@@ -48,7 +54,7 @@
                (let [v ((get grabbers t) (name k))]
                  (when (validation/valid? v)
                    [k v]))))
-        (dissoc validation/fields :sex)))
+        (dissoc validation/fields :sex :current-target :current-ezetimibe?)))
 
 (defn hydrate [component container]
   (let [comp  (fn [] (reagent.impl.template/as-element component))]
