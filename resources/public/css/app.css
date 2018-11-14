@@ -36,6 +36,12 @@ label.incomplete {
 		background: hotpink;
 }
 
-.float-centre {
-		float: centre;
+.centre {
+		text-align: center;
+}
+
+.warning {
+		text-transform: capitalize;
+		font-size: 1.2em;
+		color: orangered;
 }

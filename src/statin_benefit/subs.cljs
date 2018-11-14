@@ -124,3 +124,31 @@
   :<- [::treated-thirty-year-risk]
  (fn [[current treated] _]
    (/ (- current treated) current)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Validation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(re-frame/reg-sub
+ ::positive-benefit?
+ :<- [::rel-num-to-treat-ten]
+ :<- [::rel-num-to-treat-thirty]
+ (fn [ntts _]
+   (every? pos? ntts )))
+
+(re-frame/reg-sub
+ ::warning
+ :<- [::positive-benefit?]
+ :<- [::current-intensity]
+ :<- [::target-intensity]
+ :<- [::current-ezetimibe?]
+ :<- [::target-ezetimibe?]
+ (fn [[p? ci ti ce te] _]
+   (cond
+     (and (= ce te) (= ci ti)) false
+     (not p?) "warning: ASCVD risk increases under the proposed change!")))
+
+(re-frame/reg-sub
+ ::status
+ (fn [db _]
+   :good))
