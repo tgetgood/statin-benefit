@@ -219,53 +219,53 @@
 
    [cholesterol]])
 
-(defn result-table []
-  [:table.u-full-width
-   [:thead
-    [:tr
-     [:th ""]
-     [:th [:strong (t "10 Year ASCVD Risk")]]
-     [:th [:strong (t "30 Year ASCVD Risk")]]]]
+(defn guard-column [xs]
+  (if (grab :positive-benefit?)
+    xs
+    (take 3 xs)))
+
+(defn table [cols]
+  (let [gcs (map guard-column (remove nil? cols))
+        [head & rows]
+        (map (fn [i] (map #(nth % i) gcs)) (range (count (first gcs))))]
+    [:table.u-full-width
+     [:thead
+      (into [:tr]
+            (mapv (fn [x] [:th [:strong x]]) head))]
+     (into
+      [:tbody]
+      (mapv (fn [row]
+              (into
+               [:tr
+                [:td [:strong (first row)]]]
+               (map (fn [x] [:td x]) (rest row))))
+            rows))]))
+
+(defn labels []
+  [nil
    (if (grab :currently-on-statins?)
-     (let [ntt10 (grab :rel-num-to-treat-ten)
-           ntt30 (grab :rel-num-to-treat-thirty)
-           rrf10 (grab :rel-risk-reduction-ten)
-           rrf30 (grab :rel-risk-reduction-thirty)]
-       `[:tbody
-         ~[:tr
-           [:td [:strong (t "Current Treatment")]]
-           [:td (percent-sub ::subs/current-ten-year-risk)]
-           [:td (percent-sub ::subs/current-thirty-year-risk)]]
-         ~[:tr
-           [:td [:strong (t "Prospective Treatment")]]
-           [:td (percent-sub ::subs/treated-ten-year-risk)]
-           [:td (percent-sub ::subs/treated-thirty-year-risk)]]
-         ~@(when @(re-frame/subscribe [::subs/positive-benefit?])
-             [[:tr
-               [:td [:strong (t "Number to Treat to Prevent One Event")]]
-               [:td (num-span ntt10)]
-               [:td (num-span ntt30)]]
-              [:tr
-               [:td [:strong (t "Risk Reduction Factor")]]
-               [:td (percentage rrf10)]
-               [:td (percentage rrf30)]]])])
-     [:tbody
-      [:tr
-       [:td [:strong (t "Without Treatment")]]
-       [:td (percent-sub ::subs/untreated-ten-year-risk)]
-       [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
-      [:tr
-       [:td [:strong (t "With Treatment")]]
-       [:td (percent-sub ::subs/treated-ten-year-risk)]
-       [:td (percent-sub ::subs/treated-thirty-year-risk)]]
-      [:tr
-       [:td [:strong (t "Number to Treat to Prevent One Event")]]
-       [:td (num-sub ::subs/number-to-treat-ten-years)]
-       [:td (num-sub ::subs/number-to-treat-thirty-years)]]
-      [:tr
-       [:td [:strong (t "Risk Reduction Factor")]]
-       [:td (percent-sub ::subs/ten-year-risk-reduction-percentage)]
-       [:td (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]])])
+     (t "Current Treatment")
+     (t "Without Treatment"))
+   (if (grab :currently-on-statins?)
+     (t "Prospective Treatment")
+     (t "With Treatment"))
+   (t "Number to Treat to Prevent One Event")
+   (t "Risk Reduction Factor")])
+
+(defn result-table []
+  [table
+   [(labels)
+    (when (<= 40 (grab :age))
+      [(t "10 Year ASCVD Risk")
+       (percent-sub ::subs/current-ten-year-risk)
+       (percent-sub ::subs/treated-ten-year-risk)
+       (num-sub ::subs/number-to-treat-ten-years)
+       (percent-sub ::subs/ten-year-risk-reduction-percentage)])
+    [(t "30 Year ASCVD Risk")
+     (percent-sub ::subs/current-thirty-year-risk)
+     (percent-sub ::subs/treated-thirty-year-risk)
+     (num-sub ::subs/number-to-treat-thirty-years)
+     (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]])
 
 (defn results []
   [:div
@@ -279,7 +279,6 @@
       [:div.row
        [result-table]]]
      [:div.row (t "Fill in the form to see your results.")])])
-
 
 (defn language-switch []
   (if-let [lang (translation/current)]

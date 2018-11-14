@@ -1,5 +1,17 @@
 (ns statin-benefit.validation)
 
+(def hard-limits
+  {:total-c #(<= 0 % 12.5)
+   :ldl-c #(<= 0 % 6)
+   :hdl-c #(<= 0.5 % 3)
+   :age #(<= 18 % 100)
+   :bp-systolic #(<= 70 % 250)})
+
+(def soft-limits
+  {:bp-systolic #(<= 90 % 180)
+   :age #(<= 30 % 80)})
+
+
 (defn number [x]
   (js/parseFloat x))
 

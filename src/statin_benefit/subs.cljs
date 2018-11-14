@@ -28,12 +28,21 @@
        (when-not (validation/valid? v)
          " invalid")))))
 
+(re-frame/reg-sub
+ ::db
+ (fn [db]
+   db))
+
 ;;;;; 10 year risk
 
 (re-frame/reg-sub
- ::untreated-ten-year-risk
- (fn [db]
-   (- 1 (risk/untreated-survival db))))
+ ::current-ten-year-risk
+ :<- [::db]
+ :<- [::currently-on-statins?]
+ (fn [[db c?]]
+   (if c?
+     (- 1 (risk/treated-survival db (rc/ldl-reduction db true)))
+     (- 1 (risk/untreated-survival db)))))
 
 (re-frame/reg-sub
  ::treated-ten-year-risk
@@ -43,13 +52,13 @@
 (re-frame/reg-sub
  ::number-to-treat-ten-years
  :<- [::treated-ten-year-risk]
- :<- [::untreated-ten-year-risk]
+ :<- [::current-ten-year-risk]
  (fn [[treated untreated] _]
    (/ 1 (- untreated treated))))
 
 (re-frame/reg-sub
  ::ten-year-risk-reduction-percentage
- :<- [::untreated-ten-year-risk]
+ :<- [::current-ten-year-risk]
  :<- [::treated-ten-year-risk]
  (fn [[untreated treated] _]
    (/ (- untreated treated) untreated)))
@@ -57,69 +66,30 @@
 ;;;;; 30 year risk
 
 (re-frame/reg-sub
- ::untreated-thirty-year-risk
- (fn [db]
-   (risk30/untreated-risk db)))
+ ::current-thirty-year-risk
+ :<- [::db]
+ :<- [::currently-on-statins?]
+ (fn [[db c?]]
+   (if c?
+     (* (risk30/untreated-risk db)
+        (- 1 (risk30/risk-reduction-factor db (rc/ldl-reduction db true))))
+     (risk30/untreated-risk db))))
 
 (re-frame/reg-sub
  ::treated-thirty-year-risk
- :<- [::untreated-thirty-year-risk]
- :<- [::thirty-year-risk-reduction-percentage]
- (fn [[risk rrf] _]
-   (* risk (- 1 rrf))))
+ (fn [db]
+   (* (risk30/untreated-risk db)
+      (- 1 (risk30/risk-reduction-factor db (rc/ldl-reduction db false))))))
 
 (re-frame/reg-sub
  ::number-to-treat-thirty-years
  :<- [::treated-thirty-year-risk]
- :<- [::untreated-thirty-year-risk]
+ :<- [::current-thirty-year-risk]
  (fn [[treated untreated] _]
    (/ 1 (- untreated treated))))
 
 (re-frame/reg-sub
  ::thirty-year-risk-reduction-percentage
- (fn [db]
-   (risk30/risk-reduction-factor db (rc/ldl-reduction db))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;; Relative dosages
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(re-frame/reg-sub
- ::current-ten-year-risk
- (fn [db]
-   (- 1 (risk/treated-survival db (rc/ldl-reduction db true)))))
-
-(re-frame/reg-sub
- ::current-thirty-year-risk
- (fn [db]
-   (* (risk30/untreated-risk db)
-      (- 1 (risk30/risk-reduction-factor db (rc/ldl-reduction db true))))))
-
-(re-frame/reg-sub
- ::rel-num-to-treat-ten
- :<- [::treated-ten-year-risk]
- :<- [::current-ten-year-risk]
- (fn [[treated current] _]
-   (when-not (= current treated)
-     (/ 1 (- current treated)))))
-
-(re-frame/reg-sub
- ::rel-num-to-treat-thirty
- :<- [::treated-thirty-year-risk]
- :<- [::current-thirty-year-risk]
- (fn [[target current] _]
-   (when-not (= current target)
-     (/ 1 (- current target)))))
-
-(re-frame/reg-sub
- ::rel-risk-reduction-ten
-  :<- [::current-ten-year-risk]
-  :<- [::treated-ten-year-risk]
- (fn [[current treated] _]
-   (/ (- current treated) current)))
-
-(re-frame/reg-sub
- ::rel-risk-reduction-thirty
   :<- [::current-thirty-year-risk]
   :<- [::treated-thirty-year-risk]
  (fn [[current treated] _]
@@ -131,8 +101,8 @@
 
 (re-frame/reg-sub
  ::positive-benefit?
- :<- [::rel-num-to-treat-ten]
- :<- [::rel-num-to-treat-thirty]
+ :<- [::number-to-treat-ten-years]
+ :<- [::number-to-treat-thirty-years]
  (fn [ntts _]
    (every? pos? ntts )))
 
@@ -143,10 +113,12 @@
  :<- [::target-intensity]
  :<- [::current-ezetimibe?]
  :<- [::target-ezetimibe?]
- (fn [[p? ci ti ce te] _]
+ :<- [::age]
+ (fn [[p? ci ti ce te age] _]
    (cond
      (and (= ce te) (= ci ti)) false
-     (not p?) "warning: ASCVD risk increases under the proposed change!")))
+     (not p?) "warning: ASCVD risk increases under the proposed change!"
+     (< age 40) "10 year risk calculation isn't applicable under 40.")))
 
 (re-frame/reg-sub
  ::status
