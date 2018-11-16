@@ -79,15 +79,15 @@
 
 (defn error-message [min max]
   (cond
-    (and min max) (t* "Value must be between " min " and " max ".")
-    min (t* "Value must be greater than " min ".")
-    max (t* "Value must be less than " max ". ")))
+    (and min max) (t* "Must be between" " " min " " "and" " " max ".")
+    min (t* "Must be greater than" " " min ".")
+    max (t* "Must be less than" " " max ".")))
 
 (defn warning-message [min max]
   (cond
-    (and min max) (t* "Intended range is between " min " and " max ".")
-    min (t* "Ideal range is greater than " min)
-    max (t* "Ideal range is below " max ".")))
+    (and min max) (t* "Intended range is between" " " min "" " and" " " max ".")
+    min (t* "Intended range is greater than" " " min ".")
+    max (t* "Intended range is below" " " max ".")))
 
 (defn number-box
   "Numerical input box."

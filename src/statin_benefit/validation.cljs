@@ -1,8 +1,8 @@
 (ns statin-benefit.validation)
 
 (def hard-limits
-  {:total-c     {:min 0 :max 12.5}
-   :ldl-c       {:min 0 :max 6}
+  {:total-c     {:max 12.5}
+   :ldl-c       {:max 6}
    :hdl-c       {:min 0.5 :max 3}
    :age         {:min 18 :max 100}
    :bp-systolic {:min 70 :max 250}})

@@ -28,6 +28,15 @@
    "Are you currently taking statins?"
    "Êtes-vous actuellement traité avec des statines?"
 
+   "warning: some parameters are outside the intended range of the model. the results might not be reliable."
+   "attention: certains paramètres sont en dehors de la gamme prévue du modèle. les résultats pourraient ne pas être fiables."
+
+   "Some data entered above is outside of the applicable range of the model."
+   "certains paramètres sont en dehors de la gamme valide du modèle."
+
+   "10 year risk calculation isn't applicable to people under 40."
+   "Le calcul du risque de 10 ans n'est pas applicable au gens a moins de 40 ans."
+
    "Do you currently smoke?"   "Fumez-vous actuellement?"
    "Are you diabetic?"         "Êtes-vous diab‌étique?"
    "Statin Dosage"             "Dosage de Statines"
@@ -63,7 +72,13 @@
    "Prospective Treatment"     "Traitement Prospectif"
    "Risk Reduction Factor"     "Réduction du Risque Relatif"
    "The authors"               "Les auteurs"
-   "Released under the"        "Distribué sous le"})
+   "Released under the"        "Distribué sous le"
+
+   " " " "
+   "." "."
+   "and" "et"
+
+})
 
 (defn t [text]
   (let [lang (or (current) config/startup-lang)]
