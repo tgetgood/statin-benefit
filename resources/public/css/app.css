@@ -45,3 +45,13 @@ label.incomplete {
 		font-size: 1.2em;
 		color: orangered;
 }
+
+.error-mesg {
+		font-style: italic;
+		color: red;
+}
+
+.warn-mesg {
+		font-style: italic;
+		color: orangered;
+}

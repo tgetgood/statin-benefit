@@ -1,10 +1,11 @@
 (ns statin-benefit.views
   (:require
-            [re-frame.core :as re-frame]
-            [statin-benefit.config :as config]
-            [statin-benefit.events :as ev]
-            [statin-benefit.subs :as subs]
-            [statin-benefit.translation :as translation :refer [t]]))
+   [re-frame.core :as re-frame]
+   [statin-benefit.config :as config]
+   [statin-benefit.events :as ev]
+   [statin-benefit.subs :as subs]
+   [statin-benefit.translation :as translation :refer [t t*]]
+   [statin-benefit.validation :as validation]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Subscription wrappers
@@ -76,6 +77,18 @@
                 :on-change (pass-off k)}]
        [:span.label-body " " (t "No")]]]]))
 
+(defn error-message [min max]
+  (cond
+    (and min max) (t* "Value must be between " min " and " max ".")
+    min (t* "Value must be greater than " min ".")
+    max (t* "Value must be less than " max ". ")))
+
+(defn warning-message [min max]
+  (cond
+    (and min max) (t* "Intended range is between " min " and " max ".")
+    min (t* "Ideal range is greater than " min)
+    max (t* "Ideal range is below " max ".")))
+
 (defn number-box
   "Numerical input box."
   [k label & [{:keys [placeholder class]}]]
@@ -89,7 +102,14 @@
                                  (when current
                                    {:default-value current})
                                  (when placeholder
-                                   {:placeholder placeholder}))]]))
+                                   {:placeholder placeholder}))]
+     (when-not (nil? current)
+       (if (validation/unusable? [k current])
+         (let [{:keys [min max]} (get validation/hard-limits k)]
+           [:div.error-mesg (error-message min max)])
+         (when (validation/non-ideal? [k current])
+           (let [{:keys [min max]} (get validation/soft-limits k)]
+             [:div.warn-mesg (warning-message min max)]))))]))
 
 (defn add-default [options]
   (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
@@ -271,14 +291,16 @@
   [:div
    [:div.row
     [:h4 (t "Results")]]
-   (if @(re-frame/subscribe [::subs/filled?])
-     [:div
-      (when-let [warning (grab :warning)]
+   (if (grab :danger)
+     [:div.row.warning (t "Some data entered above is outside of the applicable range of the model.")]
+     (if @(re-frame/subscribe [::subs/filled?])
+       [:div
+        (when-let [warning (grab :warning)]
+          [:div.row
+           [:div.warning.centre (t warning)]])
         [:div.row
-         [:div.warning.centre (t warning)]])
-      [:div.row
-       [result-table]]]
-     [:div.row (t "Fill in the form to see your results.")])])
+         [result-table]]]
+       [:div.row (t "Fill in the form to see your results.")]))])
 
 (defn language-switch []
   (if-let [lang (translation/current)]

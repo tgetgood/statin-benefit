@@ -118,8 +118,8 @@
                   (= (:current-intensity db) (:target-intensity db)))
      (cond
        (some validation/non-ideal? db)
-       (str "warning: some parameters are outside the ideal range of the model, "
-            "The results might not be reliable.")
+       (str "warning: some parameters are outside the intended range of the"
+            " model. the results might not be reliable.")
 
        (not p?) "warning: ASCVD risk increases under the proposed change!"
 

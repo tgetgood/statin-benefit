@@ -73,6 +73,9 @@
         p
         [:div.alarm "!@#$!@#$%"]))))
 
+(defn t* [ & bits]
+  (apply str (map (fn [x] (if (string? x) (t x) x)) bits)))
+
 (defn switcher
   "Returns a pair of text and language key for the language currently not in
   use.

@@ -13,10 +13,10 @@
 
 (defn in-range? [x {:keys [min max]}]
   (cond
-    (and (nil? min) (nil? max))             true
-    (and (not (nil? min)) (not (nil? max))) (<= min x max)
-    (not (nil? min))                        (<= min x)
-    :else                                   (<= x max)))
+    (and (nil? min) (nil? max)) true
+    (and min max)               (<= min x max)
+    min                         (<= min x)
+    :else                       (<= x max)))
 
 (defn non-ideal? [[k v]]
   (when (contains? soft-limits k)
