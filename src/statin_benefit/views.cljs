@@ -273,7 +273,7 @@
     [:h4 (t "Results")]]
    (if @(re-frame/subscribe [::subs/filled?])
      [:div
-      (when-let [warning @(re-frame/subscribe [::subs/warning])]
+      (when-let [warning (grab :warning)]
         [:div.row
          [:div.warning.centre (t warning)]])
       [:div.row
@@ -293,11 +293,10 @@
 
 (defn copyright []
   [:div
-   [:p (str '\u00A9
-            " " "2018 George"'\u00A0 "Thanassoulis" ","
-            " " "Allan" '\u00A0 "D." '\u00A0 "Sniderman" ","
-            " & " "Michael" '\u00A0 "J." '\u00A0 "Pencina"
-            ". ")]
+   [:p (str '\u00A9 " 2018 "
+            "George"'\u00A0 "Thanassoulis"
+            ", " "Allan" '\u00A0 "D." '\u00A0 "Sniderman"
+            ", & " "Michael" '\u00A0 "J." '\u00A0 "Pencina")]
    [:p (str (t "Released under the") " LGPL" '\u2011 "3.0")]])
 
 (defn links []
