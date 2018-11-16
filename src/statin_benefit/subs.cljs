@@ -23,10 +23,11 @@
  ::validation
  (fn [db [_ k]]
    (let [v (get db k)]
-     (if (nil? v)
-       " incomplete"
-       (when-not (validation/valid? v)
-         " invalid")))))
+     (cond
+       (nil? v) " incomplete"
+       (validation/unusable? [k v]) " invalid"
+       (not (validation/valid? v)) " invalid"
+       (validation/non-ideal? [k v]) " field-warning"))))
 
 (re-frame/reg-sub
  ::db
@@ -116,5 +117,16 @@
    (when-not (and (= (:current-ezetimibe? db) (:target-ezetimibe? db))
                   (= (:current-intensity db) (:target-intensity db)))
      (cond
+       (some validation/non-ideal? db)
+       (str "warning: some parameters are outside the ideal range of the model, "
+            "The results might not be reliable.")
+
        (not p?) "warning: ASCVD risk increases under the proposed change!"
-       (< (:age db) 40) "10 year risk calculation isn't applicable under 40."))))
+
+       (< (:age db) 40)
+       "10 year risk calculation isn't applicable to people under 40."))))
+
+(re-frame/reg-sub
+ ::danger
+ (fn [db]
+   (some validation/unusable? db)))

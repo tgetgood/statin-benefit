@@ -1,7 +1,3 @@
-.hspacer {
-		padding: 5%;
-}
-
 .vspacer {
 		padding-top: 2em;
 }
@@ -12,6 +8,10 @@
 
 input[type="number"].invalid {
 		border: 1px solid red;
+}
+
+input[type="number"].field-warning {
+		border: 1px solid #FF9900;
 }
 
 input[type="number"].incomplete, select.incomplete {

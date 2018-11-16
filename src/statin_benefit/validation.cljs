@@ -9,8 +9,15 @@
 
 (def soft-limits
   {:bp-systolic #(<= 90 % 180)
-   :age #(<= 30 % 80)})
+   :age #(<= % 80)})
 
+(defn non-ideal? [[k v]]
+  (when (contains? soft-limits k)
+    (not ((get soft-limits k) v))))
+
+(defn unusable? [[k v]]
+  (when (contains? hard-limits k)
+    (not ((get hard-limits k) v))))
 
 (defn number [x]
   (js/parseFloat x))
