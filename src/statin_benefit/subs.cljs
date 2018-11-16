@@ -104,23 +104,17 @@
  :<- [::number-to-treat-ten-years]
  :<- [::number-to-treat-thirty-years]
  (fn [ntts _]
-   (every? pos? ntts )))
+   (and
+    (every? pos? ntts )
+    (not-any? infinite? ntts))))
 
 (re-frame/reg-sub
  ::warning
+ :<- [::db]
  :<- [::positive-benefit?]
- :<- [::current-intensity]
- :<- [::target-intensity]
- :<- [::current-ezetimibe?]
- :<- [::target-ezetimibe?]
- :<- [::age]
- (fn [[p? ci ti ce te age] _]
-   (cond
-     (and (= ce te) (= ci ti)) false
-     (not p?) "warning: ASCVD risk increases under the proposed change!"
-     (< age 40) "10 year risk calculation isn't applicable under 40.")))
-
-(re-frame/reg-sub
- ::status
- (fn [db _]
-   :good))
+ (fn [[db p?] _]
+   (when-not (and (= (:current-ezetimibe? db) (:target-ezetimibe? db))
+                  (= (:current-intensity db) (:target-intensity db)))
+     (cond
+       (not p?) "warning: ASCVD risk increases under the proposed change!"
+       (< (:age db) 40) "10 year risk calculation isn't applicable under 40."))))
