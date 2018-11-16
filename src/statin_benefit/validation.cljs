@@ -1,23 +1,30 @@
 (ns statin-benefit.validation)
 
 (def hard-limits
-  {:total-c #(<= 0 % 12.5)
-   :ldl-c #(<= 0 % 6)
-   :hdl-c #(<= 0.5 % 3)
-   :age #(<= 18 % 100)
-   :bp-systolic #(<= 70 % 250)})
+  {:total-c     {:min 0 :max 12.5}
+   :ldl-c       {:min 0 :max 6}
+   :hdl-c       {:min 0.5 :max 3}
+   :age         {:min 18 :max 100}
+   :bp-systolic {:min 70 :max 250}})
 
 (def soft-limits
-  {:bp-systolic #(<= 90 % 180)
-   :age #(<= % 80)})
+  {:bp-systolic {:min 90 :max 180}
+   :age         {:max 80}})
+
+(defn in-range? [x {:keys [min max]}]
+  (cond
+    (and (nil? min) (nil? max))             true
+    (and (not (nil? min)) (not (nil? max))) (<= min x max)
+    (not (nil? min))                        (<= min x)
+    :else                                   (<= x max)))
 
 (defn non-ideal? [[k v]]
   (when (contains? soft-limits k)
-    (not ((get soft-limits k) v))))
+    (not (in-range? v (get soft-limits k)))))
 
 (defn unusable? [[k v]]
   (when (contains? hard-limits k)
-    (not ((get hard-limits k) v))))
+    (not (in-range? v (get hard-limits k)))))
 
 (defn number [x]
   (js/parseFloat x))
