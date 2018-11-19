@@ -1,10 +1,11 @@
 (ns statin-benefit.views
   (:require
-            [re-frame.core :as re-frame]
-            [statin-benefit.config :as config]
-            [statin-benefit.events :as ev]
-            [statin-benefit.subs :as subs]
-            [statin-benefit.translation :as translation :refer [t]]))
+   [re-frame.core :as re-frame]
+   [statin-benefit.config :as config]
+   [statin-benefit.events :as ev]
+   [statin-benefit.subs :as subs]
+   [statin-benefit.translation :as translation :refer [t t*]]
+   [statin-benefit.validation :as validation]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Subscription wrappers
@@ -76,6 +77,18 @@
                 :on-change (pass-off k)}]
        [:span.label-body " " (t "No")]]]]))
 
+(defn error-message [min max]
+  (cond
+    (and min max) (t* "Must be between" " " min " " "and" " " max ".")
+    min (t* "Must be greater than" " " min ".")
+    max (t* "Must be less than" " " max ".")))
+
+(defn warning-message [min max]
+  (cond
+    (and min max) (t* "Intended range is between" " " min " " "and" " " max ".")
+    min (t* "Intended range is greater than" " " min ".")
+    max (t* "Intended range is below" " " max ".")))
+
 (defn number-box
   "Numerical input box."
   [k label & [{:keys [placeholder class]}]]
@@ -89,7 +102,14 @@
                                  (when current
                                    {:default-value current})
                                  (when placeholder
-                                   {:placeholder placeholder}))]]))
+                                   {:placeholder placeholder}))]
+     (when-not (nil? current)
+       (if (validation/unusable? [k current])
+         (let [{:keys [min max]} (get validation/hard-limits k)]
+           [:div.error-mesg (error-message min max)])
+         (when (validation/non-ideal? [k current])
+           (let [{:keys [min max]} (get validation/soft-limits k)]
+             [:div.warn-mesg (warning-message min max)]))))]))
 
 (defn add-default [options]
   (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
@@ -219,61 +239,68 @@
 
    [cholesterol]])
 
+(defn guard-column [xs]
+  (if (grab :positive-benefit?)
+    xs
+    (take 3 xs)))
+
+(defn table [cols]
+  (let [gcs (map guard-column (remove nil? cols))
+        [head & rows]
+        (map (fn [i] (map #(nth % i) gcs)) (range (count (first gcs))))]
+    [:table.u-full-width
+     [:thead
+      (into [:tr]
+            (mapv (fn [x] [:th [:strong x]]) head))]
+     (into
+      [:tbody]
+      (mapv (fn [row]
+              (into
+               [:tr
+                [:td [:strong (first row)]]]
+               (map (fn [x] [:td x]) (rest row))))
+            rows))]))
+
+(defn labels []
+  [nil
+   (if (grab :currently-on-statins?)
+     (t "Current Treatment")
+     (t "Without Treatment"))
+   (if (grab :currently-on-statins?)
+     (t "Prospective Treatment")
+     (t "With Treatment"))
+   (t "Number to Treat to Prevent One Event")
+   (t "Risk Reduction Factor")])
+
+(defn result-table []
+  [table
+   [(labels)
+    (when (<= 40 (grab :age))
+      [(t "10 Year ASCVD Risk")
+       (percent-sub ::subs/current-ten-year-risk)
+       (percent-sub ::subs/treated-ten-year-risk)
+       (num-sub ::subs/number-to-treat-ten-years)
+       (percent-sub ::subs/ten-year-risk-reduction-percentage)])
+    [(t "30 Year ASCVD Risk")
+     (percent-sub ::subs/current-thirty-year-risk)
+     (percent-sub ::subs/treated-thirty-year-risk)
+     (num-sub ::subs/number-to-treat-thirty-years)
+     (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]])
+
 (defn results []
   [:div
    [:div.row
-    [:h4 (t "Results")]
-    (if @(re-frame/subscribe [::subs/filled?])
-      [:div
-       [:div.row
-        [:table.u-full-width
-         [:thead
-          [:tr
-           [:th ""]
-           [:th [:strong (t "10 Year ASCVD Risk")]]
-           [:th [:strong (t "30 Year ASCVD Risk")]]]]
-         (if (grab :currently-on-statins?)
-           (let [ntt10 (grab :rel-num-to-treat-ten)
-                 ntt30 (grab :rel-num-to-treat-thirty)
-                 rrf10 (grab :rel-risk-reduction-ten)
-                 rrf30 (grab :rel-risk-reduction-thirty)]
-             [:tbody
-              [:tr
-               [:td [:strong (t "Current Treatment")]]
-               [:td (percent-sub ::subs/current-ten-year-risk)]
-               [:td (percent-sub ::subs/current-thirty-year-risk)]]
-              [:tr
-               [:td [:strong (t "Prospective Treatment")]]
-               [:td (percent-sub ::subs/treated-ten-year-risk)]
-               [:td (percent-sub ::subs/treated-thirty-year-risk)]]
-              (when (every? pos? [ntt10 ntt30])
-                [:tr
-                 [:td [:strong (t "Number to Treat to Prevent One Event")]]
-                 [:td (num-span ntt10)]
-                 [:td (num-span ntt30)]])
-              (when (every? pos? [rrf10 rrf30])
-                [:tr
-                 [:td [:strong (t "Risk Reduction Factor")]]
-                 [:td (percentage rrf10)]
-                 [:td (percentage rrf30)]])])
-           [:tbody
-            [:tr
-             [:td [:strong (t "Without Treatment")]]
-             [:td (percent-sub ::subs/untreated-ten-year-risk)]
-             [:td (percent-sub ::subs/untreated-thirty-year-risk)]]
-            [:tr
-             [:td [:strong (t "With Treatment")]]
-             [:td (percent-sub ::subs/treated-ten-year-risk)]
-             [:td (percent-sub ::subs/treated-thirty-year-risk)]]
-            [:tr
-             [:td [:strong (t "Number to Treat to Prevent One Event")]]
-             [:td (num-sub ::subs/number-to-treat-ten-years)]
-             [:td (num-sub ::subs/number-to-treat-thirty-years)]]
-            [:tr
-             [:td [:strong (t "Risk Reduction Factor")]]
-             [:td (percent-sub ::subs/ten-year-risk-reduction-percentage)]
-             [:td (percent-sub ::subs/thirty-year-risk-reduction-percentage)]]])]]]
-      [:div (t "Fill in the form to see your results.")])]])
+    [:h4 (t "Results")]]
+   (if (grab :danger)
+     [:div.row.warning (t "Some data entered above is outside of the applicable range of the model.")]
+     (if @(re-frame/subscribe [::subs/filled?])
+       [:div
+        (when-let [warning (grab :warning)]
+          [:div.row
+           [:div.warning.centre (t warning)]])
+        [:div.row
+         [result-table]]]
+       [:div.row (t "Fill in the form to see your results.")]))])
 
 (defn language-switch []
   (if-let [lang (translation/current)]
@@ -288,11 +315,10 @@
 
 (defn copyright []
   [:div
-   [:p (str '\u00A9
-            " " "2018 George"'\u00A0 "Thanassoulis" ","
-            " " "Allan" '\u00A0 "D." '\u00A0 "Sniderman" ","
-            " & " "Michael" '\u00A0 "J." '\u00A0 "Pencina"
-            ". ")]
+   [:p (str '\u00A9 " 2018 "
+            "George"'\u00A0 "Thanassoulis"
+            ", " "Allan" '\u00A0 "D." '\u00A0 "Sniderman"
+            ", & " "Michael" '\u00A0 "J." '\u00A0 "Pencina")]
    [:p (str (t "Released under the") " LGPL" '\u2011 "3.0")]])
 
 (defn links []

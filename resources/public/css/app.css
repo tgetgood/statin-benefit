@@ -1,7 +1,3 @@
-.hspacer {
-		padding: 5%;
-}
-
 .vspacer {
 		padding-top: 2em;
 }
@@ -12,6 +8,10 @@
 
 input[type="number"].invalid {
 		border: 1px solid red;
+}
+
+input[type="number"].field-warning {
+		border: 1px solid #FF9900;
 }
 
 input[type="number"].incomplete, select.incomplete {
@@ -36,6 +36,22 @@ label.incomplete {
 		background: hotpink;
 }
 
-.float-centre {
-		float: centre;
+.centre {
+		text-align: center;
+}
+
+.warning {
+		text-transform: capitalize;
+		font-size: 1.2em;
+		color: orangered;
+}
+
+.error-mesg {
+		font-style: italic;
+		color: red;
+}
+
+.warn-mesg {
+		font-style: italic;
+		color: orangered;
 }
