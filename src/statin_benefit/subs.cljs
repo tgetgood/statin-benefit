@@ -121,7 +121,7 @@
        (str "warning: some parameters are outside the intended range of the"
             " model. the results might not be reliable.")
 
-       (not p?) "warning: ASCVD risk increases under the proposed change!"
+       (not p?) "warning: ASCVD risk increases under the proposed change."
 
        (< (:age db) 40)
        "10 year risk calculation isn't applicable to people under 40."))))

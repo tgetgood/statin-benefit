@@ -37,6 +37,9 @@
    "10 year risk calculation isn't applicable to people under 40."
    "Le calcul du risque de 10 ans n'est pas applicable au gens a moins de 40 ans."
 
+   "warning: ASCVD risk increases under the proposed change."
+   "attention: le risque de maladie cardiaque augmente."
+
    "Do you currently smoke?"   "Fumez-vous actuellement?"
    "Are you diabetic?"         "Êtes-vous diab‌étique?"
    "Statin Dosage"             "Dosage de Statines"
@@ -74,11 +77,17 @@
    "The authors"               "Les auteurs"
    "Released under the"        "Distribué sous le"
 
-   " " " "
-   "." "."
-   "and" "et"
+   "Must be between"                "Doit être entre"
+   "Must be greater than"           "Doit être supérieur à"
+   "Must be less than"              "Doit être inférieur à"
+   "Intended range is between"      "La gamme prévue est entre"
+   "Intended range is greater than" "La gamme prévue est supérieure à"
+   "Intended range is below"        "La gamme prévue est inférieure à"
 
-})
+   ;; This method is starting to breakdown.
+   " "   " "
+   "."   "."
+   "and" "et"})
 
 (defn t [text]
   (let [lang (or (current) config/startup-lang)]

@@ -85,7 +85,7 @@
 
 (defn warning-message [min max]
   (cond
-    (and min max) (t* "Intended range is between" " " min "" " and" " " max ".")
+    (and min max) (t* "Intended range is between" " " min " " "and" " " max ".")
     min (t* "Intended range is greater than" " " min ".")
     max (t* "Intended range is below" " " max ".")))
 
