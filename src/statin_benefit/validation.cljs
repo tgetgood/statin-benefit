@@ -24,7 +24,6 @@
     :else                       (<= x max)))
 
 (defn hard-limits [units k]
-  (println units)
   ((h-limits units) k))
 
 (defn test-limits [limits [k v]]
@@ -35,7 +34,6 @@
   (test-limits soft-limits x))
 
 (defn unusable? [units x]
-  (println units)
   (test-limits (h-limits units) x))
 
 (defn number [x]
