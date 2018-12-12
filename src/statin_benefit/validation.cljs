@@ -1,11 +1,16 @@
 (ns statin-benefit.validation)
 
-(def hard-limits
-  {:total-c     {:max 12.5}
-   :ldl-c       {:max 6}
-   :hdl-c       {:min 0.5 :max 3}
-   :age         {:min 18 :max 100}
-   :bp-systolic {:min 70 :max 250}})
+(def h-limits
+  {:mmol-l {:total-c     {:max 12.5}
+            :ldl-c       {:min 2 :max 6}
+            :hdl-c       {:min 0.5 :max 3}
+            :age         {:min 18 :max 100}
+            :bp-systolic {:min 70 :max 250}}
+   :mg-dl  {:total-c     {:max 480}
+            :ldl-c       {:min 80 :max 240}
+            :hdl-c       {:min 20 :max 120}
+            :age         {:min 18 :max 100}
+            :bp-systolic {:min 70 :max 250}}})
 
 (def soft-limits
   {:bp-systolic {:min 90 :max 180}
@@ -18,13 +23,20 @@
     min                         (<= min x)
     :else                       (<= x max)))
 
-(defn non-ideal? [[k v]]
-  (when (contains? soft-limits k)
-    (not (in-range? v (get soft-limits k)))))
+(defn hard-limits [units k]
+  (println units)
+  ((h-limits units) k))
 
-(defn unusable? [[k v]]
-  (when (contains? hard-limits k)
-    (not (in-range? v (get hard-limits k)))))
+(defn test-limits [limits [k v]]
+  (when (contains? limits k)
+    (not (in-range? v (get limits k)))))
+
+(defn non-ideal? [x]
+  (test-limits soft-limits x))
+
+(defn unusable? [units x]
+  (println units)
+  (test-limits (h-limits units) x))
 
 (defn number [x]
   (js/parseFloat x))
