@@ -76,8 +76,14 @@
 (defn hazard-ration [survival]
   (exp (- (* (ln (- 1 survival)) 0.12346) 0.10821)))
 
+(defn treated-survival* [survival ldl-reduction]
+  (exp survival
+       (exp (hazard-ration survival)
+            ldl-reduction)))
+
 (defn treated-survival [stats ldl-reduction]
-  (let [us (untreated-survival stats)]
-    (exp us
-         (exp (hazard-ration us)
-              ldl-reduction))))
+  (treated-survival* (untreated-survival stats) ldl-reduction))
+
+(defn risk-reduction [survival ldl-reduction]
+  (let [t (treated-survival* survival ldl-reduction)]
+    [(- 1 survival) (- 1 t) (/ (- t survival) (- 1 survival))]))

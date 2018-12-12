@@ -22,10 +22,11 @@
 (re-frame/reg-sub
  ::validation
  (fn [db [_ k]]
-   (let [v (get db k)]
+   (let [units (:c-units db)
+         v (get db k)]
      (cond
        (nil? v) " incomplete"
-       (validation/unusable? [k v]) " invalid"
+       (validation/unusable? units [k v]) " invalid"
        (not (validation/valid? v)) " invalid"
        (validation/non-ideal? [k v]) " field-warning"))))
 
@@ -33,6 +34,11 @@
  ::db
  (fn [db]
    db))
+
+(re-frame/reg-sub
+ ::units
+ (fn [db]
+   (:c-units db)))
 
 ;;;;; 10 year risk
 
@@ -129,4 +135,4 @@
 (re-frame/reg-sub
  ::danger
  (fn [db]
-   (some validation/unusable? db)))
+   (some (partial validation/unusable? (:c-units db)) db)))

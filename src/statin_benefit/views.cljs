@@ -92,20 +92,21 @@
 (defn number-box
   "Numerical input box."
   [k label & [{:keys [placeholder class]}]]
-  (let [current (grab k)]
+  (let [current (grab k)
+        units (grab :c-units)]
     [:span
      (when label [:label {:for (name k)} label])
      [:input.u-full-width (merge {:id (name k)
                                   :type            :number :min 0
                                   :class           (str (validation k) " " class)
                                   :on-change       (pass-off k)}
-                                 (when current
+                                 (when (validation/valid? current)
                                    {:default-value current})
                                  (when placeholder
                                    {:placeholder placeholder}))]
      (when-not (nil? current)
-       (if (validation/unusable? [k current])
-         (let [{:keys [min max]} (get validation/hard-limits k)]
+       (if (validation/unusable? units [k current])
+         (let [{:keys [min max]} (validation/hard-limits units k)]
            [:div.error-mesg (error-message min max)])
          (when (validation/non-ideal? [k current])
            (let [{:keys [min max]} (get validation/soft-limits k)]
