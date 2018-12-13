@@ -198,7 +198,7 @@
 (defn form []
   [:div
    [:div.row
-    [:div.columns.three
+    [:div.columns.two
      [number-box :age (t "Age") {:placeholder 50}]]
 
     [:div.columns.four
@@ -206,7 +206,7 @@
       {:black (t "African American")
        :white (t "White")}]]
 
-    [:div.columns.five
+    [:div.columns.six
      [:label {:for   "sex"
               :class (validation :sex)}
       (t "Sex")]
@@ -223,7 +223,7 @@
    [:div.vspacer]
 
    [:div.row
-    [:div.columns.five
+    [:div.columns.six
      [:div.row
       [:div.columns.twelve
        [:label {:for "bp"} (t "Blood Pressure")]
@@ -237,7 +237,7 @@
                                        :hide? true}]]]]
      [:div.row [mesg (grab :c-units) :bp-systolic (grab :bp-systolic)]]]
 
-    [:div.columns.seven
+    [:div.columns.six
      [yes-no-radio :hypertension
       (t "Are you currently being treated for hypertension?")]]]
 
