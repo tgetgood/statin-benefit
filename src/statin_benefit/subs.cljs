@@ -112,7 +112,7 @@
  :<- [::number-to-treat-thirty-years]
  (fn [ntts _]
    (and
-    (every? #(< 0.05 %) ntts )
+    (every? pos? ntts )
     (not-any? infinite? ntts))))
 
 (re-frame/reg-sub
