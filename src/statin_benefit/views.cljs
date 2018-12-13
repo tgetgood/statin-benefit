@@ -250,7 +250,7 @@
    [cholesterol]])
 
 (defn guard-column [xs]
-  (if (grab :positive-benefit?)
+  (if (grab :non-negative-benefit?)
     xs
     (take 3 xs)))
 
