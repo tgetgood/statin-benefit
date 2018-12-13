@@ -89,28 +89,32 @@
     min (t* "Intended range is greater than" " " min ".")
     max (t* "Intended range is below" " " max ".")))
 
+(defn mesg [units k current]
+  [:div
+   (when-not (nil? current)
+     (if (validation/unusable? units [k current])
+       (let [{:keys [min max]} (validation/hard-limits units k)]
+         [:div.error-mesg (error-message min max)])
+       (when (validation/non-ideal? [k current])
+         (let [{:keys [min max]} (get validation/soft-limits k)]
+           [:div.warn-mesg (warning-message min max)]))))])
+
 (defn number-box
   "Numerical input box."
-  [k label & [{:keys [placeholder class]}]]
+  [k label & [{:keys [placeholder class hide?]}]]
   (let [current (grab k)
-        units (grab :c-units)]
+        units   (grab :c-units)]
     [:span
      (when label [:label {:for (name k)} label])
-     [:input.u-full-width (merge {:id (name k)
-                                  :type            :number :min 0
-                                  :class           (str (validation k) " " class)
-                                  :on-change       (pass-off k)}
+     [:input.u-full-width (merge {:id        (name k)
+                                  :type      :number :min 0
+                                  :class     (str (validation k) " " class)
+                                  :on-change (pass-off k)}
                                  (when (validation/valid? current)
                                    {:default-value current})
                                  (when placeholder
                                    {:placeholder placeholder}))]
-     (when-not (nil? current)
-       (if (validation/unusable? units [k current])
-         (let [{:keys [min max]} (validation/hard-limits units k)]
-           [:div.error-mesg (error-message min max)])
-         (when (validation/non-ideal? [k current])
-           (let [{:keys [min max]} (get validation/soft-limits k)]
-             [:div.warn-mesg (warning-message min max)]))))]))
+     (when-not hide? [mesg units k current])]))
 
 (defn add-default [options]
   (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
@@ -216,13 +220,18 @@
 
    [:div.row
     [:div.columns.five
-     [:label {:for "bp"} (t "Blood Pressure")]
-     [:div#bp
-      [number-box :bp-systolic nil {:placeholder 120
-                                    :class "bp-input"}]
-      [:span.slash " / "]
-      [number-box :bp-diastolic nil {:placeholder 80
-                                     :class "bp-input"}]]]
+     [:div.row
+      [:div.columns.twelve
+       [:label {:for "bp"} (t "Blood Pressure")]
+       [:div#bp
+        [number-box :bp-systolic nil {:placeholder 120
+                                      :class "bp-input"
+                                      :hide? true}]
+        [:span.slash " / "]
+        [number-box :bp-diastolic nil {:placeholder 80
+                                       :class "bp-input"
+                                       :hide? true}]]]]
+     [:div.row [mesg (grab :c-units) :bp-systolic (grab :bp-systolic)]]]
 
     [:div.columns.seven
      [yes-no-radio :hypertension
