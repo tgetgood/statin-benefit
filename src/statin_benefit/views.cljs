@@ -1,11 +1,11 @@
 (ns statin-benefit.views
-  (:require
-   [re-frame.core :as re-frame]
-   [statin-benefit.config :as config]
-   [statin-benefit.events :as ev]
-   [statin-benefit.subs :as subs]
-   [statin-benefit.translation :as translation :refer [t t*]]
-   [statin-benefit.validation :as validation]))
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [statin-benefit.config :as config]
+            [statin-benefit.events :as ev]
+            [statin-benefit.subs :as subs]
+            [statin-benefit.translation :as translation :refer [t t*]]
+            [statin-benefit.validation :as validation]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Subscription wrappers
@@ -102,19 +102,23 @@
 (defn number-box
   "Numerical input box."
   [k label & [{:keys [placeholder class hide?]}]]
-  (let [current (grab k)
-        units   (grab :c-units)]
-    [:span
-     (when label [:label {:for (name k)} label])
-     [:input.u-full-width (merge {:id        (name k)
-                                  :type      :number :min 0
-                                  :class     (str (validation k) " " class)
-                                  :on-change (pass-off k)}
-                                 (when (validation/valid? current)
-                                   {:default-value current})
-                                 (when placeholder
-                                   {:placeholder placeholder}))]
-     (when-not hide? [mesg units k current])]))
+  (let [blurred (reagent/atom false)]
+    (fn [k label & [{:keys [placeholder class hide?]}]]
+      (let [current (grab k)
+            units   (grab :c-units)]
+        [:span
+         (when label [:label {:for (name k)} label])
+         [:input.u-full-width (merge {:id        (name k)
+                                      :type      :number :min 0
+                                      :class     (str (validation k) " " class)
+                                      :on-blur   #(reset! blurred true)
+                                      :on-change (pass-off k)}
+                                     (when (validation/valid? current)
+                                       {:default-value current})
+                                     (when placeholder
+                                       {:placeholder placeholder}))]
+         (when @blurred
+           (when-not hide? [mesg units k current]))]))))
 
 (defn add-default [options]
   (cons [:option {:disabled true :value :none} "--- " (t "Select") " ---"]
